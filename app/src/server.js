@@ -1,43 +1,4 @@
-/*
-http://patorjk.com/software/taag/#p=display&f=ANSI%20Regular&t=Server
-
-███████ ███████ ██████  ██    ██ ███████ ██████  
-██      ██      ██   ██ ██    ██ ██      ██   ██ 
-███████ █████   ██████  ██    ██ █████   ██████  
-     ██ ██      ██   ██  ██  ██  ██      ██   ██ 
-███████ ███████ ██   ██   ████   ███████ ██   ██                                           
-
-dependencies: {
-    compression : https://www.npmjs.com/package/compression
-    cors        : https://www.npmjs.com/package/cors
-    dotenv      : https://www.npmjs.com/package/dotenv
-    express     : https://www.npmjs.com/package/express
-    ngrok       : https://www.npmjs.com/package/ngrok
-    socket.io   : https://www.npmjs.com/package/socket.io
-    swagger     : https://www.npmjs.com/package/swagger-ui-express
-    uuid        : https://www.npmjs.com/package/uuid
-    yamljs      : https://www.npmjs.com/package/yamljs
-}
-
-MiroTalk Signaling Server
-Copyright (C) 2021 Miroslav Pejic <miroslav.pejic.85@gmail.com>
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as published
-by the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-*/
-
-'use strict'; // https://www.w3schools.com/js/js_strict.asp
+'use strict';
 
 require('dotenv').config();
 
@@ -50,11 +11,11 @@ const cors = require('cors');
 const path = require('path');
 const app = express();
 
-app.use(cors()); // Enable All CORS Requests for all origins
-app.use(compression()); // Compress all HTTP responses using GZip
+app.use(cors()); 
+app.use(compression()); 
 
-const isHttps = false; // must be the same to client.js isHttps
-const port = process.env.PORT || 3000; // must be the same to client.js signalingServerPort
+const isHttps = false; 
+const port = process.env.PORT || 3000; 
 
 let io, server, host;
 
@@ -74,17 +35,7 @@ if (isHttps) {
     host = 'http://' + 'localhost' + ':' + port;
 }
 // 
-const ngrok = require('ngrok');
-const yamlJS = require('yamljs');
-const swaggerUi = require('swagger-ui-express');
-const swaggerDocument = yamlJS.load(path.join(__dirname + '/../api/swagger.yaml'));
-const { v4: uuidV4 } = require('uuid');
 
-const apiBasePath = '/api/v1'; // api endpoint path
-const api_docs = host + apiBasePath + '/docs'; // api docs
-const api_key_secret = process.env.API_KEY_SECRET || 'mirotalk_default_secret';
-const ngrokEnabled = process.env.NGROK_ENABLED;
-const ngrokAuthToken = process.env.NGROK_AUTH_TOKEN;
 const turnEnabled = process.env.TURN_ENABLED;
 const turnUrls = process.env.TURN_URLS;
 const turnUsername = process.env.TURN_USERNAME;
@@ -121,11 +72,6 @@ app.use((err, req, res, next) => {
     }
 });
 
-/*
-app.get(["/"], (req, res) => {
-    res.sendFile(path.join(__dirname, "public/view/client.html"))
-}); */
-
 // all start from here
 app.get(['/'], (req, res) => {
     res.sendFile(path.join(__dirname, '../../', 'public/view/landing.html'));
@@ -160,68 +106,12 @@ app.get('/join/*', (req, res) => {
         res.sendFile(path.join(__dirname, '../../', 'public/view/client.html'));
     }
 });
-
-/**
-    MiroTalk API v1
-    The response will give you a entrypoint / Room URL for your meeting.
-    For api docs we use: https://swagger.io/
-*/
-
-// api docs
-app.use(apiBasePath + '/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
-// request meeting room endpoint
-app.post([apiBasePath + '/meeting'], (req, res) => {
-    // check if user was authorized for the api call
-    let authorization = req.headers.authorization;
-    if (authorization != api_key_secret) {
-        log.debug('MiroTalk get meeting - Unauthorized', {
-            header: req.headers,
-            body: req.body,
-        });
-        return res.status(403).json({ error: 'Unauthorized!' });
-    }
-    // setup meeting URL
-    let host = req.headers.host;
-    let meetingURL = getMeetingURL(host) + '/join/' + uuidV4();
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify({ meeting: meetingURL }));
-
-    // log.debug the output if all done
-    log.debug('MiroTalk get meeting - Authorized', {
-        header: req.headers,
-        body: req.body,
-        meeting: meetingURL,
-    });
-});
-
-/**
- * Get Meeting Room URL
- * @param {*} host string
- * @returns meeting Room URL
- */
-function getMeetingURL(host) {
-    return 'http' + (host.includes('localhost') ? '' : 's') + '://' + host;
-}
-
-// end of MiroTalk API v1
-
 // not match any of page before, so 404 not found
 app.get('*', function (req, res) {
     res.sendFile(path.join(__dirname, '../../', 'public/view/404.html'));
 });
 
-/**
- * You should probably use a different stun-turn server
- * doing commercial stuff, also see:
- *
- * https://gist.github.com/zziuni/3741933
- * https://www.twilio.com/docs/stun-turn
- * https://github.com/coturn/coturn
- *
- * Check the functionality of STUN/TURN servers:
- * https://webrtc.github.io/samples/src/content/peerconnection/trickle-ice/
- */
+
 const iceServers = [{ urls: 'stun:stun.l.google.com:19302' }];
 
 if (turnEnabled == 'true') {
@@ -233,79 +123,14 @@ if (turnEnabled == 'true') {
 }
 
 /**
- * Expose server to external with https tunnel using ngrok
- * https://ngrok.com
- */
-async function ngrokStart() {
-    try {
-        await ngrok.authtoken(ngrokAuthToken);
-        await ngrok.connect(port);
-        let api = ngrok.getApi();
-        let data = await api.listTunnels();
-        let pu0 = data.tunnels[0].public_url;
-        let pu1 = data.tunnels[1].public_url;
-        let tunnelHttps = pu0.startsWith('https') ? pu0 : pu1;
-        // server settings
-        log.debug('settings', {
-            server: host,
-            server_tunnel: tunnelHttps,
-            api_docs: api_docs,
-            api_key_secret: api_key_secret,
-            iceServers: iceServers,
-            ngrok: {
-                ngrok_enabled: ngrokEnabled,
-                ngrok_token: ngrokAuthToken,
-            },
-        });
-    } catch (err) {
-        console.error('[Error] ngrokStart', err);
-        process.exit(1);
-    }
-}
-
-/**
  * Start Local Server with ngrok https tunnel (optional)
  */
 server.listen(port, null, () => {
-    log.debug(
-        `%c
-
-	███████╗██╗ ██████╗ ███╗   ██╗      ███████╗███████╗██████╗ ██╗   ██╗███████╗██████╗ 
-	██╔════╝██║██╔════╝ ████╗  ██║      ██╔════╝██╔════╝██╔══██╗██║   ██║██╔════╝██╔══██╗
-	███████╗██║██║  ███╗██╔██╗ ██║█████╗███████╗█████╗  ██████╔╝██║   ██║█████╗  ██████╔╝
-	╚════██║██║██║   ██║██║╚██╗██║╚════╝╚════██║██╔══╝  ██╔══██╗╚██╗ ██╔╝██╔══╝  ██╔══██╗
-	███████║██║╚██████╔╝██║ ╚████║      ███████║███████╗██║  ██║ ╚████╔╝ ███████╗██║  ██║
-	╚══════╝╚═╝ ╚═════╝ ╚═╝  ╚═══╝      ╚══════╝╚══════╝╚═╝  ╚═╝  ╚═══╝  ╚══════╝╚═╝  ╚═╝ started...
-
-	`,
-        'font-family:monospace',
-    );
-
-    // https tunnel
-    if (ngrokEnabled == 'true') {
-        ngrokStart();
-    } else {
-        // server settings
         log.debug('settings', {
             server: host,
-            api_docs: api_docs,
-            api_key_secret: api_key_secret,
-            iceServers: iceServers,
         });
-    }
 });
 
-/**
- * Users will connect to the signaling server, after which they'll issue a "join"
- * to join a particular channel. The signaling server keeps track of all sockets
- * who are in a channel, and on join will send out 'addPeer' events to each pair
- * of users in a channel. When clients receive the 'addPeer' even they'll begin
- * setting up an RTCPeerConnection with one another. During this process they'll
- * need to relay ICECandidate information to one another, as well as SessionDescription
- * information. After all of that happens, they'll finally be able to complete
- * the peer connection and will be in streaming audio/video between eachother.
- * On peer connected
- */
 io.sockets.on('connect', (socket) => {
     log.debug('[' + socket.id + '] connection accepted');
 
@@ -667,19 +492,6 @@ io.sockets.on('connect', (socket) => {
         }
     });
 
-    /**
-     * Whiteboard actions for all user in the same room
-     */
-    socket.on('wbCanvasToJson', (config) => {
-        let room_id = config.room_id;
-        sendToRoom(room_id, socket.id, 'wbCanvasToJson', config);
-    });
-
-    socket.on('whiteboardAction', (config) => {
-        log.debug('Whiteboard', config);
-        let room_id = config.room_id;
-        sendToRoom(room_id, socket.id, 'whiteboardAction', config);
-    });
 }); // end [sockets.on-connect]
 
 /**
