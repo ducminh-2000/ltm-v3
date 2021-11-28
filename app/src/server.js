@@ -48,11 +48,16 @@ let channels = {}; // collect channels
 let sockets = {}; // collect sockets
 let peers = {}; // collect peers info grp by channels
 
+
+/** set up giao diện 
+ * 
+ * 
+*/
 // Use all static files from the public folder
 app.use(express.static(path.join(__dirname, '../../', 'public')));
 
-// Api parse body data as json
-app.use(express.json());
+// // Api parse body data as json
+// app.use(express.json());
 
 // Remove trailing slashes in url handle bad requests
 app.use((err, req, res, next) => {
@@ -111,7 +116,9 @@ app.get('*', function (req, res) {
     res.sendFile(path.join(__dirname, '../../', 'public/view/404.html'));
 });
 
+/** */
 
+// ice server
 const iceServers = [{ urls: 'stun:stun.l.google.com:19302' }];
 
 if (turnEnabled == 'true') {
@@ -122,11 +129,9 @@ if (turnEnabled == 'true') {
     });
 }
 
-/**
- * Start Local Server with ngrok https tunnel (optional)
- */
-server.listen(port, null, () => {
-        log.debug('settings', {
+
+server.listen(port,() => {
+        log.debug('Running: ', {
             server: host,
         });
 });
@@ -138,22 +143,24 @@ io.sockets.on('connect', (socket) => {
     sockets[socket.id] = socket;
 
     /**
-     * On peer diconnected
+     * Khi 1 peer disconnect
      */
     socket.on('disconnect', () => {
+        // xóa peer ngắt kêt nối ở những peer khác
         for (let channel in socket.channels) {
             removePeerFrom(channel);
         }
         log.debug('[' + socket.id + '] disconnected');
+        // xóa peer khỏi danh sách
         delete sockets[socket.id];
     });
 
     /**
-     * On peer join
+     * khi 1 peer join
      */
     socket.on('join', (config) => {
         log.debug('[' + socket.id + '] join ', config);
-
+        // tạo peer mới khi có người join
         let channel = config.channel;
         let peer_name = config.peer_name;
         let peer_video = config.peer_video;
@@ -171,14 +178,14 @@ io.sockets.on('connect', (socket) => {
         // no channel aka room in peers init
         if (!(channel in peers)) peers[channel] = {};
 
-        // room locked by the participants can't join
+        // phòng bị khóa sẽ không thể join
         if (peers[channel]['Locked'] === true) {
             log.debug('[' + socket.id + '] [Warning] Room Is Locked', channel);
             socket.emit('roomIsLocked');
             return;
         }
 
-        // collect peers info grp by channels
+        // collect peers info group by channels
         peers[channel][socket.id] = {
             peer_name: peer_name,
             peer_video: peer_video,
@@ -188,8 +195,10 @@ io.sockets.on('connect', (socket) => {
         };
         log.debug('connected peers grp by roomId', peers);
 
+        // thêm peer mới
         addPeerTo(channel);
 
+        // tạo kênh
         channels[channel][socket.id] = socket;
         socket.channels[channel] = channel;
     });
@@ -452,7 +461,7 @@ io.sockets.on('connect', (socket) => {
         let room_id = config.room_id;
         let peer_name = config.peer_name;
 
-        log.debug('[' + socket.id + '] Peer [' + peer_name + '] send fileAbort to room_id [' + room_id + ']');
+        // log.debug('[' + socket.id + '] Peer [' + peer_name + '] send fileAbort to room_id [' + room_id + ']');
         sendToRoom(room_id, socket.id, 'fileAbort');
     });
 

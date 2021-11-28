@@ -1,7 +1,7 @@
-'use strict'; 
+'use strict';
 
-const isHttps = false; 
-const signalingServerPort = 3000; 
+const isHttps = false;
+const signalingServerPort = 3000;
 const signalingServer = getSignalingServer();
 const roomId = getRoomId();
 const peerInfo = getPeerInfo();
@@ -21,8 +21,8 @@ const messageImg = '../images/message.png';
 const kickedOutImg = '../images/leave-room.png';
 const aboutImg = '../images/about.png';
 
-const notifyBySound = true; 
-const fileSharingInput = '*'; 
+const notifyBySound = true;
+const fileSharingInput = '*';
 
 const isWebRTCSupported = DetectRTC.isWebRTCSupported;
 const isMobileDevice = DetectRTC.isMobileDevice;
@@ -473,7 +473,7 @@ function thereIsPeerConnections() {
 }
 
 /**
- * On body load Get started
+ * khởi tạo socket bên client
  */
 function initClientPeer() {
     setTheme(mirotalkTheme);
@@ -887,10 +887,10 @@ function handleDisconnect() {
 }
 
 /**
- * When a user leaves a channel (or is disconnected from the signaling server) everyone will recieve a 'removePeer' message
- * telling them to trash the media channels they have open for those that peer. If it was this client that left a channel,
- * they'll also receive the removePeers. If this client was disconnected, they wont receive removePeers, but rather the
- * signaling_socket.on('disconnect') code will kick in and tear down all the peer sessions.
+ * Khi 1 peer rời khỏi kênh (hoặc bị ngắt kết nối khỏi máy chủ), các peer khác sẽ nhận được thông báo 'removePeer'
+ * yêu cầu bỏ rác các kênh truyền thông mà đã mở cho peer đó. Nếu chính peer này đã rời khỏi kênh,
+ * họ cũng sẽ nhận được removePeers. Nếu ứng dụng khách này bị ngắt kết nối, họ sẽ không nhận được removePeers, mà là
+ * signal_socket.on ('disconnect') sẽ bắt đầu và hủy bỏ tất cả các phiên ngang hàng.
  *
  * @param {*} config
  */
@@ -1086,13 +1086,12 @@ function setupLocalMedia(callback, errorback) {
         return;
     }
 
-    getPeerGeoLocation();
+    // getPeerGeoLocation();
 
     console.log('Requesting access to local audio / video inputs');
 
     // default | qvgaVideo | vgaVideo | hdVideo | fhdVideo | 4kVideo |
-    let videoConstraints =
-        myBrowserName === 'Firefox' ? getVideoConstraints('useVideo') : getVideoConstraints('default');
+    let videoConstraints = getVideoConstraints('default');
 
     const constraints = {
         audio: {
@@ -1251,6 +1250,8 @@ function loadRemoteMediaStream(stream, peers, peer_id) {
 
     remoteMediaStream = stream;
 
+    /** setup giao diện */
+
     // remote video elements
     const remoteVideoWrap = document.createElement('div');
     const remoteMedia = document.createElement('video');
@@ -1356,6 +1357,8 @@ function loadRemoteMediaStream(stream, peers, peer_id) {
     remoteVideoWrap.appendChild(remoteMedia);
 
     document.body.appendChild(remoteVideoWrap);
+
+    /** */
 
     // attachMediaStream is a part of the adapter.js library
     attachMediaStream(remoteMedia, remoteMediaStream);
@@ -1601,7 +1604,7 @@ function manageLeftButtons() {
     setShareRoomBtn();
     setAudioBtn();
     setVideoBtn();
-    setSwapCameraBtn();
+    // setSwapCameraBtn();
     setScreenShareBtn();
     setRecordStreamBtn();
     setFullScreenBtn();
@@ -1645,18 +1648,18 @@ function setVideoBtn() {
 /**
  * Check if can swap or not the cam, if yes show the button else hide it
  */
-function setSwapCameraBtn() {
-    navigator.mediaDevices.enumerateDevices().then((devices) => {
-        const videoInput = devices.filter((device) => device.kind === 'videoinput');
-        if (videoInput.length > 1 && isMobileDevice) {
-            swapCameraBtn.addEventListener('click', (e) => {
-                swapCamera();
-            });
-        } else {
-            swapCameraBtn.style.display = 'none';
-        }
-    });
-}
+// function setSwapCameraBtn() {
+//     navigator.mediaDevices.enumerateDevices().then((devices) => {
+//         const videoInput = devices.filter((device) => device.kind === 'videoinput');
+//         if (videoInput.length > 1 && isMobileDevice) {
+//             swapCameraBtn.addEventListener('click', (e) => {
+//                 swapCamera();
+//             });
+//         } else {
+//             swapCameraBtn.style.display = 'none';
+//         }
+//     });
+// }
 
 /**
  * Check if i can share the screen, if yes show button else hide it
