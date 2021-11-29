@@ -3319,7 +3319,7 @@ function setMyHandStatus() {
                 content: 'RAISE your hand',
                 placement: 'right-start',
             });
-        }
+        } 
     } else {
         // Lower hand
         myHandStatus = true;
@@ -4478,8 +4478,6 @@ async function playSound(name) {
     try {
         await audioToPlay.play();
     } catch (err) {
-        // console.error("Cannot play sound", err);
-        // Automatic playback failed. (safari)
         return;
     }
 }
