@@ -402,19 +402,6 @@ function getPeerInfo() {
 }
 
 /**
- * Get approximative peer geolocation
- * @return json
- */
-function getPeerGeoLocation() {
-    fetch(peerLoockupUrl)
-        .then((res) => res.json())
-        .then((outJson) => {
-            peerGeo = outJson;
-        })
-        .catch((err) => console.error(err));
-}
-
-/**
  * Get Signaling server URL
  * @return Signaling server URL
  */
@@ -476,7 +463,6 @@ function thereIsPeerConnections() {
  * khởi tạo socket bên client
  */
 function initClientPeer() {
-    setTheme(mirotalkTheme);
 
     if (!isWebRTCSupported) {
         userLog('error', 'This browser seems not supported WebRTC!');
@@ -497,9 +483,6 @@ function initClientPeer() {
     signalingSocket.on('peerStatus', handlePeerStatus);
     signalingSocket.on('peerAction', handlePeerAction);
     signalingSocket.on('kickOut', handleKickedOut);
-    // signalingSocket.on('fileInfo', handleFileInfo);
-    // signalingSocket.on('fileAbort', handleFileAbort);
-    signalingSocket.on('videoPlayer', handleVideoPlayer);
     signalingSocket.on('disconnect', handleDisconnect);
     signalingSocket.on('removePeer', handleRemovePeer);
 } // end [initClientPeer]
@@ -548,12 +531,6 @@ function whoAreYou() {
             <button id="initVideoBtn" class="fas fa-video" onclick="handleVideo(event, true)"></button>
         </div>`,
         confirmButtonText: `Join meeting`,
-        // showClass: {
-        //     popup: 'animate__animated animate__fadeInDown',
-        // },
-        // hideClass: {
-        //     popup: 'animate__animated animate__fadeOutUp',
-        // },
         inputValidator: (value) => {
             if (!value) return 'Please enter your name';
 
@@ -604,50 +581,6 @@ function joinToChannel() {
         peer_rec: isRecScreenSream,
     });
 }
-
-/**
- * welcome message
- */
-// function welcomeUser() {
-//     const myRoomUrl = window.location.href;
-//     // playSound('newMessage');
-//     Swal.fire({
-//         background: swalBackground,
-//         position: 'center',
-//         title: '<strong>Welcome ' + myPeerName + '</strong>',
-//         imageAlt: 'mirotalk-welcome',
-//         imageUrl: welcomeImg,
-//         html:
-//             `
-//         <br/> 
-//         <p style="color:white;">Share this meeting invite others to join.</p>
-//         <p style="color:rgb(8, 189, 89);">` +
-//             myRoomUrl +
-//             `</p>`,
-//         showDenyButton: true,
-//         showCancelButton: true,
-//         confirmButtonText: `Copy meeting URL`,
-//         denyButtonText: `Email invite`,
-//         cancelButtonText: `Close`,
-//         showClass: {
-//             popup: 'animate__animated animate__fadeInDown',
-//         },
-//         hideClass: {
-//             popup: 'animate__animated animate__fadeOutUp',
-//         },
-//     }).then((result) => {
-//         if (result.isConfirmed) {
-//             copyRoomURL();
-//         } else if (result.isDenied) {
-//             let message = {
-//                 email: '',
-//                 subject: 'Please join our MiroTalk Video Chat Meeting',
-//                 body: 'Click to join: ' + myRoomUrl,
-//             };
-//             shareRoomByEmail(message);
-//         }
-//     });
-// }
 
 /**
  * When we join a group, our signaling server will send out 'addPeer' events to each pair of users in the group (creating a fully-connected graph of users,
@@ -764,7 +697,6 @@ function handleRTCDataChannels(peer_id) {
         };
     };
     createChatDataChannel(peer_id);
-    createFileSharingDataChannel(peer_id);
 }
 
 /**
@@ -920,126 +852,126 @@ function handleRemovePeer(config) {
  * Set mirotalk theme neon | dark | forest | sky | ghost | ...
  * @param {*} theme
  */
-function setTheme(theme) {
-    if (!theme) return;
+// function setTheme(theme) {
+//     if (!theme) return;
 
-    mirotalkTheme = theme;
-    switch (mirotalkTheme) {
-        case 'neon':
-            // neon theme
-            swalBackground = 'rgba(0, 0, 0, 0.7)';
-            document.documentElement.style.setProperty('--body-bg', 'black');
-            document.documentElement.style.setProperty('--msger-bg', 'linear-gradient(to left, #383838, #000000)');
-            document.documentElement.style.setProperty(
-                '--msger-private-bg',
-                'linear-gradient(to left, #383838, #000000)',
-            );
-            document.documentElement.style.setProperty('--left-msg-bg', '#da05f3');
-            document.documentElement.style.setProperty('--private-msg-bg', '#f77070');
-            document.documentElement.style.setProperty('--right-msg-bg', '#579ffb');
-            document.documentElement.style.setProperty('--wb-bg', 'linear-gradient(to left, #1f1e1e, #000000)');
-            document.documentElement.style.setProperty('--wb-hbg', '#000000');
-            document.documentElement.style.setProperty('--btn-bg', 'white');
-            document.documentElement.style.setProperty('--btn-color', 'black');
-            document.documentElement.style.setProperty('--btns-left', '20px');
-            document.documentElement.style.setProperty('--btn-opc', '1');
-            document.documentElement.style.setProperty('--my-settings-label-color', 'white');
-            document.documentElement.style.setProperty('--box-shadow', '3px 3px 6px #0500ff, -3px -3px 6px #da05f3');
-            break;
-        case 'dark':
-            // dark theme
-            swalBackground = 'rgba(0, 0, 0, 0.7)';
-            document.documentElement.style.setProperty('--body-bg', '#16171b');
-            document.documentElement.style.setProperty('--msger-bg', 'linear-gradient(to left, #383838, #000000)');
-            document.documentElement.style.setProperty(
-                '--msger-private-bg',
-                'linear-gradient(to left, #383838, #000000)',
-            );
-            document.documentElement.style.setProperty('--left-msg-bg', '#222328');
-            document.documentElement.style.setProperty('--private-msg-bg', '#f77070');
-            document.documentElement.style.setProperty('--right-msg-bg', '#0a0b0c');
-            document.documentElement.style.setProperty('--wb-bg', 'linear-gradient(to left, #1f1e1e, #000000)');
-            document.documentElement.style.setProperty('--wb-hbg', '#000000');
-            document.documentElement.style.setProperty('--btn-bg', 'white');
-            document.documentElement.style.setProperty('--btn-color', 'black');
-            document.documentElement.style.setProperty('--btns-left', '20px');
-            document.documentElement.style.setProperty('--btn-opc', '1');
-            document.documentElement.style.setProperty('--my-settings-label-color', 'white');
-            document.documentElement.style.setProperty('--box-shadow', '3px 3px 6px #0a0b0c, -3px -3px 6px #222328');
-            break;
-        case 'forest':
-            // forest theme
-            swalBackground = 'rgba(0, 0, 0, 0.7)';
-            document.documentElement.style.setProperty('--body-bg', 'black');
-            document.documentElement.style.setProperty('--msger-bg', 'linear-gradient(to left, #383838, #000000)');
-            document.documentElement.style.setProperty(
-                '--msger-private-bg',
-                'linear-gradient(to left, #383838, #000000)',
-            );
-            document.documentElement.style.setProperty('--left-msg-bg', '#2e3500');
-            document.documentElement.style.setProperty('--private-msg-bg', '#f77070');
-            document.documentElement.style.setProperty('--right-msg-bg', '#004b1c');
-            document.documentElement.style.setProperty('--wb-bg', 'linear-gradient(to left, #1f1e1e, #000000)');
-            document.documentElement.style.setProperty('--wb-hbg', '#000000');
-            document.documentElement.style.setProperty('--btn-bg', 'white');
-            document.documentElement.style.setProperty('--btn-color', 'black');
-            document.documentElement.style.setProperty('--btns-left', '20px');
-            document.documentElement.style.setProperty('--btn-opc', '1');
-            document.documentElement.style.setProperty('--my-settings-label-color', 'white');
-            document.documentElement.style.setProperty('--box-shadow', '3px 3px 6px #27944f, -3px -3px 6px #14843d');
-            break;
-        case 'sky':
-            // sky theme
-            swalBackground = 'rgba(0, 0, 0, 0.7)';
-            document.documentElement.style.setProperty('--body-bg', 'black');
-            document.documentElement.style.setProperty('--msger-bg', 'linear-gradient(to left, #383838, #000000)');
-            document.documentElement.style.setProperty(
-                '--msger-private-bg',
-                'linear-gradient(to left, #383838, #000000)',
-            );
-            document.documentElement.style.setProperty('--left-msg-bg', '#0c95b7');
-            document.documentElement.style.setProperty('--private-msg-bg', '#f77070');
-            document.documentElement.style.setProperty('--right-msg-bg', '#012a5f');
-            document.documentElement.style.setProperty('--wb-bg', 'linear-gradient(to left, #1f1e1e, #000000)');
-            document.documentElement.style.setProperty('--wb-hbg', '#000000');
-            document.documentElement.style.setProperty('--btn-bg', 'white');
-            document.documentElement.style.setProperty('--btn-color', 'black');
-            document.documentElement.style.setProperty('--btns-left', '20px');
-            document.documentElement.style.setProperty('--btn-opc', '1');
-            document.documentElement.style.setProperty('--my-settings-label-color', 'white');
-            document.documentElement.style.setProperty('--box-shadow', '3px 3px 6px #03a5ce, -3px -3px 6px #03a5ce');
-            break;
-        case 'ghost':
-            // ghost theme
-            swalBackground = 'rgba(0, 0, 0, 0.150)';
-            document.documentElement.style.setProperty('--body-bg', 'black');
-            document.documentElement.style.setProperty(
-                '--msger-bg',
-                'linear-gradient(to left, transparent, rgba(0, 0, 0, 0.7))',
-            );
-            document.documentElement.style.setProperty(
-                '--msger-private-bg',
-                'linear-gradient(to left, #383838, #000000)',
-            );
-            document.documentElement.style.setProperty('--wb-bg', 'transparent');
-            document.documentElement.style.setProperty('--wb-hbg', '#000000');
-            document.documentElement.style.setProperty('--btn-bg', 'white');
-            document.documentElement.style.setProperty('--btn-color', 'black');
-            document.documentElement.style.setProperty('--btns-left', '5px');
-            document.documentElement.style.setProperty('--btn-opc', '0.7');
-            document.documentElement.style.setProperty('--box-shadow', '0px');
-            document.documentElement.style.setProperty('--my-settings-label-color', 'white');
-            document.documentElement.style.setProperty('--left-msg-bg', 'rgba(0, 0, 0, 0.7)');
-            document.documentElement.style.setProperty('--private-msg-bg', 'rgba(252, 110, 110, 0.7)');
-            document.documentElement.style.setProperty('--right-msg-bg', 'rgba(0, 0, 0, 0.7)');
-            break;
-        // ...
-        default:
-            console.log('No theme found');
-    }
+//     mirotalkTheme = theme;
+//     switch (mirotalkTheme) {
+//         case 'neon':
+//             // neon theme
+//             swalBackground = 'rgba(0, 0, 0, 0.7)';
+//             document.documentElement.style.setProperty('--body-bg', 'black');
+//             document.documentElement.style.setProperty('--msger-bg', 'linear-gradient(to left, #383838, #000000)');
+//             document.documentElement.style.setProperty(
+//                 '--msger-private-bg',
+//                 'linear-gradient(to left, #383838, #000000)',
+//             );
+//             document.documentElement.style.setProperty('--left-msg-bg', '#da05f3');
+//             document.documentElement.style.setProperty('--private-msg-bg', '#f77070');
+//             document.documentElement.style.setProperty('--right-msg-bg', '#579ffb');
+//             document.documentElement.style.setProperty('--wb-bg', 'linear-gradient(to left, #1f1e1e, #000000)');
+//             document.documentElement.style.setProperty('--wb-hbg', '#000000');
+//             document.documentElement.style.setProperty('--btn-bg', 'white');
+//             document.documentElement.style.setProperty('--btn-color', 'black');
+//             document.documentElement.style.setProperty('--btns-left', '20px');
+//             document.documentElement.style.setProperty('--btn-opc', '1');
+//             document.documentElement.style.setProperty('--my-settings-label-color', 'white');
+//             document.documentElement.style.setProperty('--box-shadow', '3px 3px 6px #0500ff, -3px -3px 6px #da05f3');
+//             break;
+//         case 'dark':
+//             // dark theme
+//             swalBackground = 'rgba(0, 0, 0, 0.7)';
+//             document.documentElement.style.setProperty('--body-bg', '#16171b');
+//             document.documentElement.style.setProperty('--msger-bg', 'linear-gradient(to left, #383838, #000000)');
+//             document.documentElement.style.setProperty(
+//                 '--msger-private-bg',
+//                 'linear-gradient(to left, #383838, #000000)',
+//             );
+//             document.documentElement.style.setProperty('--left-msg-bg', '#222328');
+//             document.documentElement.style.setProperty('--private-msg-bg', '#f77070');
+//             document.documentElement.style.setProperty('--right-msg-bg', '#0a0b0c');
+//             document.documentElement.style.setProperty('--wb-bg', 'linear-gradient(to left, #1f1e1e, #000000)');
+//             document.documentElement.style.setProperty('--wb-hbg', '#000000');
+//             document.documentElement.style.setProperty('--btn-bg', 'white');
+//             document.documentElement.style.setProperty('--btn-color', 'black');
+//             document.documentElement.style.setProperty('--btns-left', '20px');
+//             document.documentElement.style.setProperty('--btn-opc', '1');
+//             document.documentElement.style.setProperty('--my-settings-label-color', 'white');
+//             document.documentElement.style.setProperty('--box-shadow', '3px 3px 6px #0a0b0c, -3px -3px 6px #222328');
+//             break;
+//         case 'forest':
+//             // forest theme
+//             swalBackground = 'rgba(0, 0, 0, 0.7)';
+//             document.documentElement.style.setProperty('--body-bg', 'black');
+//             document.documentElement.style.setProperty('--msger-bg', 'linear-gradient(to left, #383838, #000000)');
+//             document.documentElement.style.setProperty(
+//                 '--msger-private-bg',
+//                 'linear-gradient(to left, #383838, #000000)',
+//             );
+//             document.documentElement.style.setProperty('--left-msg-bg', '#2e3500');
+//             document.documentElement.style.setProperty('--private-msg-bg', '#f77070');
+//             document.documentElement.style.setProperty('--right-msg-bg', '#004b1c');
+//             document.documentElement.style.setProperty('--wb-bg', 'linear-gradient(to left, #1f1e1e, #000000)');
+//             document.documentElement.style.setProperty('--wb-hbg', '#000000');
+//             document.documentElement.style.setProperty('--btn-bg', 'white');
+//             document.documentElement.style.setProperty('--btn-color', 'black');
+//             document.documentElement.style.setProperty('--btns-left', '20px');
+//             document.documentElement.style.setProperty('--btn-opc', '1');
+//             document.documentElement.style.setProperty('--my-settings-label-color', 'white');
+//             document.documentElement.style.setProperty('--box-shadow', '3px 3px 6px #27944f, -3px -3px 6px #14843d');
+//             break;
+//         case 'sky':
+//             // sky theme
+//             swalBackground = 'rgba(0, 0, 0, 0.7)';
+//             document.documentElement.style.setProperty('--body-bg', 'black');
+//             document.documentElement.style.setProperty('--msger-bg', 'linear-gradient(to left, #383838, #000000)');
+//             document.documentElement.style.setProperty(
+//                 '--msger-private-bg',
+//                 'linear-gradient(to left, #383838, #000000)',
+//             );
+//             document.documentElement.style.setProperty('--left-msg-bg', '#0c95b7');
+//             document.documentElement.style.setProperty('--private-msg-bg', '#f77070');
+//             document.documentElement.style.setProperty('--right-msg-bg', '#012a5f');
+//             document.documentElement.style.setProperty('--wb-bg', 'linear-gradient(to left, #1f1e1e, #000000)');
+//             document.documentElement.style.setProperty('--wb-hbg', '#000000');
+//             document.documentElement.style.setProperty('--btn-bg', 'white');
+//             document.documentElement.style.setProperty('--btn-color', 'black');
+//             document.documentElement.style.setProperty('--btns-left', '20px');
+//             document.documentElement.style.setProperty('--btn-opc', '1');
+//             document.documentElement.style.setProperty('--my-settings-label-color', 'white');
+//             document.documentElement.style.setProperty('--box-shadow', '3px 3px 6px #03a5ce, -3px -3px 6px #03a5ce');
+//             break;
+//         case 'ghost':
+//             // ghost theme
+//             swalBackground = 'rgba(0, 0, 0, 0.150)';
+//             document.documentElement.style.setProperty('--body-bg', 'black');
+//             document.documentElement.style.setProperty(
+//                 '--msger-bg',
+//                 'linear-gradient(to left, transparent, rgba(0, 0, 0, 0.7))',
+//             );
+//             document.documentElement.style.setProperty(
+//                 '--msger-private-bg',
+//                 'linear-gradient(to left, #383838, #000000)',
+//             );
+//             document.documentElement.style.setProperty('--wb-bg', 'transparent');
+//             document.documentElement.style.setProperty('--wb-hbg', '#000000');
+//             document.documentElement.style.setProperty('--btn-bg', 'white');
+//             document.documentElement.style.setProperty('--btn-color', 'black');
+//             document.documentElement.style.setProperty('--btns-left', '5px');
+//             document.documentElement.style.setProperty('--btn-opc', '0.7');
+//             document.documentElement.style.setProperty('--box-shadow', '0px');
+//             document.documentElement.style.setProperty('--my-settings-label-color', 'white');
+//             document.documentElement.style.setProperty('--left-msg-bg', 'rgba(0, 0, 0, 0.7)');
+//             document.documentElement.style.setProperty('--private-msg-bg', 'rgba(252, 110, 110, 0.7)');
+//             document.documentElement.style.setProperty('--right-msg-bg', 'rgba(0, 0, 0, 0.7)');
+//             break;
+//         // ...
+//         default:
+//             console.log('No theme found');
+//     }
 
-    setButtonsBarPosition(mirotalkBtnsBar);
-}
+//     setButtonsBarPosition(mirotalkBtnsBar);
+// }
 
 /**
  * Set buttons bar position
@@ -1086,9 +1018,6 @@ function setupLocalMedia(callback, errorback) {
         if (callback) callback();
         return;
     }
-
-    // getPeerGeoLocation();
-
     console.log('Requesting access to local audio / video inputs');
 
     // default | qvgaVideo | vgaVideo | hdVideo | fhdVideo | 4kVideo |
@@ -1264,8 +1193,6 @@ function loadRemoteMediaStream(stream, peers, peer_id) {
     const remoteHandStatusIcon = document.createElement('button');
     const remoteVideoStatusIcon = document.createElement('button');
     const remoteAudioStatusIcon = document.createElement('button');
-    const remotePrivateMsgBtn = document.createElement('button');
-    const remoteYoutubeBtnBtn = document.createElement('button');
     const remotePeerKickOut = document.createElement('button');
     const remoteVideoFullScreenBtn = document.createElement('button');
     const remoteVideoAvatarImage = document.createElement('img');
@@ -1303,18 +1230,6 @@ function loadRemoteMediaStream(stream, peers, peer_id) {
     tippy(remoteAudioStatusIcon, {
         content: 'Participant audio is ON',
     });
-    // remote peer YouTube video
-    remoteYoutubeBtnBtn.setAttribute('id', peer_id + '_youtube');
-    remoteYoutubeBtnBtn.className = 'fab fa-youtube';
-    tippy(remoteYoutubeBtnBtn, {
-        content: 'Send YouTube video',
-    });
-    // remote private message
-    remotePrivateMsgBtn.setAttribute('id', peer_id + '_privateMsg');
-    remotePrivateMsgBtn.className = 'fas fa-paper-plane';
-    tippy(remotePrivateMsgBtn, {
-        content: 'Send private message',
-    });
     // remote peer kick out
     remotePeerKickOut.setAttribute('id', peer_id + '_kickOut');
     remotePeerKickOut.className = 'fas fa-sign-out-alt';
@@ -1337,8 +1252,6 @@ function loadRemoteMediaStream(stream, peers, peer_id) {
     remoteStatusMenu.appendChild(remoteHandStatusIcon);
     remoteStatusMenu.appendChild(remoteVideoStatusIcon);
     remoteStatusMenu.appendChild(remoteAudioStatusIcon);
-    remoteStatusMenu.appendChild(remoteYoutubeBtnBtn);
-    remoteStatusMenu.appendChild(remotePrivateMsgBtn);
     remoteStatusMenu.appendChild(remotePeerKickOut);
     remoteStatusMenu.appendChild(remoteVideoFullScreenBtn);
 
@@ -1381,14 +1294,9 @@ function loadRemoteMediaStream(stream, peers, peer_id) {
     handlePeerAudioBtn(peer_id);
     // handle remote peers video on-off
     handlePeerVideoBtn(peer_id);
-    // handle remote private messages
-    handlePeerPrivateMsg(peer_id, peer_name);
-    // handle remote youtube video
-    handlePeerYouTube(peer_id);
     // show status menu
     toggleClassElements('statusMenu', 'inline');
     // notify if peer started to recording own screen + audio
-    if (peer_rec) notifyRecording(peer_name, 'Started');
 }
 
 /**
@@ -1569,64 +1477,20 @@ function handleVideoPlayerFs(videoId, videoFullScreenBtnId, peer_id = null) {
     }
 }
 
-/**
- * Start talk time
- */
-// function startCountTime() {
-//     countTime.style.display = 'inline';
-//     callStartTime = Date.now();
-//     setInterval(function printTime() {
-//         callElapsedTime = Date.now() - callStartTime;
-//         countTime.innerHTML = getTimeToString(callElapsedTime);
-//     }, 1000);
-// }
-
-/**
- * Return time to string
- * @param {*} time
- */
-// function getTimeToString(time) {
-//     let diffInHrs = time / 3600000;
-//     let hh = Math.floor(diffInHrs);
-//     let diffInMin = (diffInHrs - hh) * 60;
-//     let mm = Math.floor(diffInMin);
-//     let diffInSec = (diffInMin - mm) * 60;
-//     let ss = Math.floor(diffInSec);
-//     let formattedHH = hh.toString().padStart(2, '0');
-//     let formattedMM = mm.toString().padStart(2, '0');
-//     let formattedSS = ss.toString().padStart(2, '0');
-//     return `${formattedHH}:${formattedMM}:${formattedSS}`;
-// }
 
 /**
  * Handle WebRTC left buttons
  */
 function manageLeftButtons() {
-    // setShareRoomBtn();
     setAudioBtn();
     setVideoBtn();
-    // setSwapCameraBtn();
     setScreenShareBtn();
-    // setRecordStreamBtn();
     setFullScreenBtn();
     setChatRoomBtn();
-    // setChatEmojiBtn();
     setMyHandBtn();
-    // setMyFileShareBtn();
-    // setMySettingsBtn();
-    // setAboutBtn();
     setLeaveRoomBtn();
     showButtonsBarAndMenu();
 }
-
-/**
- * Copy - share room url button click event
- */
-// function setShareRoomBtn() {
-//     shareRoomBtn.addEventListener('click', async (e) => {
-//         shareRoomUrl();
-//     });
-// }
 
 /**
  * Audio mute - unmute button click event
@@ -1647,22 +1511,6 @@ function setVideoBtn() {
 }
 
 /**
- * Check if can swap or not the cam, if yes show the button else hide it
- */
-// function setSwapCameraBtn() {
-//     navigator.mediaDevices.enumerateDevices().then((devices) => {
-//         const videoInput = devices.filter((device) => device.kind === 'videoinput');
-//         if (videoInput.length > 1 && isMobileDevice) {
-//             swapCameraBtn.addEventListener('click', (e) => {
-//                 swapCamera();
-//             });
-//         } else {
-//             swapCameraBtn.style.display = 'none';
-//         }
-//     });
-// }
-
-/**
  * Check if i can share the screen, if yes show button else hide it
  */
 function setScreenShareBtn() {
@@ -1674,19 +1522,6 @@ function setScreenShareBtn() {
         screenShareBtn.style.display = 'none';
     }
 }
-
-/**
- * Start - Stop Stream recording
- */
-// function setRecordStreamBtn() {
-//     recordStreamBtn.addEventListener('click', (e) => {
-//         if (isStreamRecording) {
-//             stopStreamRecording();
-//         } else {
-//             startStreamRecording();
-//         }
-//     });
-// }
 
 /**
  * Full screen button click event
@@ -1733,57 +1568,16 @@ function setChatRoomBtn() {
         }
     });
 
-    // ghost theme + undo
-    // msgerTheme.addEventListener('click', (e) => {
-    //     if (mirotalkTheme == 'ghost') return;
-
-    //     if (e.target.className == 'fas fa-ghost') {
-    //         e.target.className = 'fas fa-undo';
-    //         document.documentElement.style.setProperty('--msger-bg', 'rgba(0, 0, 0, 0.100)');
-    //     } else {
-    //         e.target.className = 'fas fa-ghost';
-    //         document.documentElement.style.setProperty('--msger-bg', 'linear-gradient(to left, #383838, #000000)');
-    //     }
-    // });
-
-    // show msger participants section
-    // msgerCPBtn.addEventListener('click', (e) => {
-    //     if (!thereIsPeerConnections()) {
-    //         userLog('info', 'No participants detected');
-    //         return;
-    //     }
-    //     msgerCP.style.display = 'flex';
-    // });
-
     // hide msger participants section
     msgerCPCloseBtn.addEventListener('click', (e) => {
         msgerCP.style.display = 'none';
     });
-
-    // // clean chat messages
-    // msgerClean.addEventListener('click', (e) => {
-    //     cleanMessages();
-    // });
-
-    // save chat messages to file
-    // msgerSaveBtn.addEventListener('click', (e) => {
-    //     if (chatMessages.length != 0) {
-    //         downloadChatMsgs();
-    //         return;
-    //     }
-    //     userLog('info', 'No chat messages to save');
-    // });
 
     // close chat room - show left button and status menu if hide
     msgerClose.addEventListener('click', (e) => {
         hideChatRoomAndEmojiPicker();
         showButtonsBarAndMenu();
     });
-
-    // open Video Url Player
-    // msgerVideoUrlBtn.addEventListener('click', (e) => {
-    //     sendVideoUrl();
-    // });
 
     // Execute a function when the user releases a key on the keyboard
     msgerInput.addEventListener('keyup', (e) => {
@@ -1811,24 +1605,6 @@ function setChatRoomBtn() {
 }
 
 /**
- * Emoji picker chat room button click event
- */
-// function setChatEmojiBtn() {
-//     msgerEmojiBtn.addEventListener('click', (e) => {
-//         // prevent refresh page
-//         e.preventDefault();
-//         hideShowEmojiPicker();
-//     });
-
-//     emojiPicker.addEventListener('emoji-click', (e) => {
-//         //console.log(e.detail);
-//         //console.log(e.detail.emoji.unicode);
-//         msgerInput.value += e.detail.emoji.unicode;
-//         hideShowEmojiPicker();
-//     });
-// }
-
-/**
  * Set my hand button click event
  */
 function setMyHandBtn() {
@@ -1836,52 +1612,6 @@ function setMyHandBtn() {
         setMyHandStatus();
     });
 }
-
-/**
- * File Transfer button event click
- */
-// function setMyFileShareBtn() {
-//     // make send file div draggable
-//     if (!isMobileDevice) dragElement(getId('sendFileDiv'), getId('imgShare'));
-
-//     fileShareBtn.addEventListener('click', (e) => {
-//         //window.open("https://fromsmash.com"); // for Big Data
-//         selectFileToShare();
-//     });
-//     sendAbortBtn.addEventListener('click', (e) => {
-//         abortFileTransfer();
-//     });
-// }
-
-/**
- * My settings button click event
- */
-// function setMySettingsBtn() {
-//     mySettingsBtn.addEventListener('click', (e) => {
-//         if (isMobileDevice) {
-//             buttonsBar.style.display = 'none';
-//             isButtonsVisible = false;
-//         }
-//         hideShowMySettings();
-//     });
-//     mySettingsCloseBtn.addEventListener('click', (e) => {
-//         hideShowMySettings();
-//     });
-//     myPeerNameSetBtn.addEventListener('click', (e) => {
-//         updateMyPeerName();
-//     });
-//     // make chat room draggable for desktop
-//     if (!isMobileDevice) dragElement(mySettings, mySettingsHeader);
-// }
-
-/**
- * About button click event
- */
-// function setAboutBtn() {
-//     aboutBtn.addEventListener('click', (e) => {
-//         showAbout();
-//     });
-// }
 
 /**
  * Leave room button click event
@@ -1960,11 +1690,6 @@ function setupMySettings() {
         screenFpsSelect.value = null;
         screenFpsSelect.disabled = true;
     }
-    // select themes
-    themeSelect.addEventListener('change', (e) => {
-        setTheme(themeSelect.value);
-        setRecordButtonUi();
-    });
     // Mobile not support buttons bar position horizontal
     if (isMobileDevice) {
         btnsBarSelect.disabled = true;
@@ -2263,121 +1988,6 @@ function showButtonsBarAndMenu() {
 }
 
 /**
- * Copy room url to clipboard and share it with navigator share if supported
- * https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share
- */
-// async function shareRoomUrl() {
-//     const myRoomUrl = window.location.href;
-
-//     // navigator share
-//     let isSupportedNavigatorShare = false;
-//     let errorNavigatorShare = false;
-//     // if supported
-//     if (navigator.share) {
-//         isSupportedNavigatorShare = true;
-//         try {
-//             // not add title and description to load metadata from url
-//             await navigator.share({ url: myRoomUrl });
-//             userLog('toast', 'Room Shared successfully!');
-//         } catch (err) {
-//             errorNavigatorShare = true;
-//             /*
-//                 This feature is available only in secure contexts (HTTPS),
-//                 in some or all supporting browsers and mobile devices
-//                 console.error("navigator.share", err); 
-//             */
-//         }
-//     }
-
-//     // something wrong or not supported navigator.share
-//     if (!isSupportedNavigatorShare || (isSupportedNavigatorShare && errorNavigatorShare)) {
-//         // playSound('newMessage');
-//         Swal.fire({
-//             background: swalBackground,
-//             position: 'center',
-//             title: 'Share the Room',
-//             // imageAlt: 'mirotalk-share',
-//             // imageUrl: shareUrlImg,
-//             html:
-//                 `
-//             <br/>
-//             <div id="qrRoomContainer">
-//                 <canvas id="qrRoom"></canvas>
-//             </div>
-//             <br/><br/>
-//             <p style="color:white;"> Share this meeting invite others to join.</p>
-//             <p style="color:rgb(8, 189, 89);">` +
-//                 myRoomUrl +
-//                 `</p>`,
-//             showDenyButton: true,
-//             showCancelButton: true,
-//             confirmButtonText: `Copy meeting URL`,
-//             denyButtonText: `Email invite`,
-//             cancelButtonText: `Close`,
-//             showClass: {
-//                 popup: 'animate__animated animate__fadeInDown',
-//             },
-//             hideClass: {
-//                 popup: 'animate__animated animate__fadeOutUp',
-//             },
-//         }).then((result) => {
-//             if (result.isConfirmed) {
-//                 copyRoomURL();
-//             } else if (result.isDenied) {
-//                 let message = {
-//                     email: '',
-//                     subject: 'Please join our MiroTalk Video Chat Meeting',
-//                     body: 'Click to join: ' + myRoomUrl,
-//                 };
-//                 shareRoomByEmail(message);
-//             }
-//         });
-//         makeRoomQR();
-//     }
-// }
-
-/**
- * Make Room QR
- * https://github.com/neocotic/qrious
- */
-function makeRoomQR() {
-    let qr = new QRious({
-        element: getId('qrRoom'),
-        value: window.location.href,
-    });
-    qr.set({
-        size: 256,
-    });
-}
-
-/**
- * Copy Room URL to clipboard
- */
-function copyRoomURL() {
-    let roomURL = window.location.href;
-    let tmpInput = document.createElement('input');
-    document.body.appendChild(tmpInput);
-    tmpInput.value = roomURL;
-    tmpInput.select();
-    tmpInput.setSelectionRange(0, 99999); // For mobile devices
-    navigator.clipboard.writeText(tmpInput.value);
-    console.log('Copied to clipboard Join Link ', roomURL);
-    document.body.removeChild(tmpInput);
-    userLog('toast', 'Meeting URL is copied to clipboard 👍');
-}
-
-/**
- * Share room id by email
- * @param {*} message email | subject | body
- */
-function shareRoomByEmail(message) {
-    let email = message.email;
-    let subject = message.subject;
-    let emailBody = message.body;
-    document.location = 'mailto:' + email + '?subject=' + subject + '&body=' + emailBody;
-}
-
-/**
  * Handle Audio ON - OFF
  * @param {*} e event
  * @param {*} init bool true/false
@@ -2419,34 +2029,6 @@ function handleVideo(e, init) {
         }
     }
     setMyVideoStatus(myVideoStatus);
-}
-
-/**
- * SwapCamera front (user) - rear (environment)
- */
-function swapCamera() {
-    // setup camera
-    camera = camera == 'user' ? 'environment' : 'user';
-    if (camera == 'user') useVideo = true;
-    else useVideo = { facingMode: { exact: camera } };
-
-    // some devices can't swap the cam, if have Video Track already in execution.
-    if (useVideo) stopLocalVideoTrack();
-
-    // https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
-    navigator.mediaDevices
-        .getUserMedia({ video: useVideo })
-        .then((camStream) => {
-            refreshMyStreamToPeers(camStream);
-            refreshMyLocalStream(camStream);
-            if (useVideo) setMyVideoStatusTrue();
-            myVideo.classList.toggle('mirror');
-        })
-        .catch((err) => {
-            console.log('[Error] to swaping camera', err);
-            userLog('error', 'Error to swaping the camera ' + err);
-            // https://blog.addpipe.com/common-getusermedia-errors/
-        });
 }
 
 /**
@@ -2628,21 +2210,6 @@ function refreshMyLocalStream(stream, localAudioTrackChange = false) {
 }
 
 /**
- * Start recording time
- */
-// function startRecordingTime() {
-//     recStartTime = Date.now();
-//     let rc = setInterval(function printTime() {
-//         if (isStreamRecording) {
-//             recElapsedTime = Date.now() - recStartTime;
-//             myVideoParagraph.innerHTML = myPeerName + '&nbsp;&nbsp; 🔴 REC ' + getTimeToString(recElapsedTime);
-//             return;
-//         }
-//         clearInterval(rc);
-//     }, 1000);
-// }
-
-/**
  * Get MediaRecorder MimeTypes
  * @returns mimeType
  */
@@ -2658,190 +2225,6 @@ function getSupportedMimeTypes() {
         return MediaRecorder.isTypeSupported(mimeType);
     });
 }
-
-/**
- * Start Recording
- * https://github.com/webrtc/samples/tree/gh-pages/src/content/getusermedia/record
- * https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder
- * https://developer.mozilla.org/en-US/docs/Web/API/MediaStream
- */
-function startStreamRecording() {
-    recordedBlobs = [];
-
-    let options = getSupportedMimeTypes();
-    console.log('MediaRecorder options supported', options);
-    options = { mimeType: options[0] }; // select the first available as mimeType
-
-    try {
-        if (isMobileDevice) {
-            // on mobile devices recording camera + audio
-            mediaRecorder = new MediaRecorder(localMediaStream, options);
-            console.log('Created MediaRecorder', mediaRecorder, 'with options', options);
-            handleMediaRecorder(mediaRecorder);
-        } else {
-            // on desktop devices recording screen + audio
-            screenMaxFrameRate = parseInt(screenFpsSelect.value);
-            const constraints = {
-                video: { frameRate: { max: screenMaxFrameRate } },
-            };
-            let recScreenStreamPromise = navigator.mediaDevices.getDisplayMedia(constraints);
-            recScreenStreamPromise
-                .then((screenStream) => {
-                    const newStream = new MediaStream([
-                        screenStream.getVideoTracks()[0],
-                        localMediaStream.getAudioTracks()[0],
-                    ]);
-                    recScreenStream = newStream;
-                    mediaRecorder = new MediaRecorder(recScreenStream, options);
-                    console.log('Created MediaRecorder', mediaRecorder, 'with options', options);
-                    isRecScreenSream = true;
-                    handleMediaRecorder(mediaRecorder);
-                })
-                .catch((err) => {
-                    console.error('[Error] Unable to recording the screen + audio', err);
-                    userLog('error', 'Unable to recording the screen + audio ' + err);
-                });
-        }
-    } catch (err) {
-        console.error('Exception while creating MediaRecorder: ', err);
-        userLog('error', "Can't start stream recording: " + err);
-        return;
-    }
-}
-
-/**
- * Notify me if someone start to recording they screen + audio
- * @param {*} from peer_name
- * @param {*} action Started Stopped
- */
-function notifyRecording(from, action) {
-    let msg = '[ 🔴 REC ] : ' + action + ' to recording his own screen and audio';
-    let chatMessage = {
-        from: from,
-        to: myPeerName,
-        msg: msg,
-        privateMsg: false,
-    };
-    handleDataChannelChat(chatMessage);
-    userLog('toast', from + ' ' + msg);
-}
-
-/**
- * Handle Media Recorder obj
- * @param {*} mediaRecorder
- */
-function handleMediaRecorder(mediaRecorder) {
-    mediaRecorder.start();
-    mediaRecorder.addEventListener('start', handleMediaRecorderStart);
-    mediaRecorder.addEventListener('dataavailable', handleMediaRecorderData);
-    // mediaRecorder.addEventListener('stop', handleMediaRecorderStop);
-}
-
-/**
- * Handle Media Recorder onstart event
- * @param {*} event
- */
-// function handleMediaRecorderStart(event) {
-//     // playSound('recStart');
-//     if (isRecScreenSream) {
-//         emitPeersAction('recStart');
-//         emitPeerStatus('rec', isRecScreenSream);
-//     }
-//     console.log('MediaRecorder started: ', event);
-//     isStreamRecording = true;
-//     recordStreamBtn.style.setProperty('background-color', 'red');
-//     startRecordingTime();
-//     // only for desktop
-//     if (!isMobileDevice) {
-//         tippy(recordStreamBtn, {
-//             content: 'STOP recording',
-//             placement: 'right-start',
-//         });
-//     } else {
-//         swapCameraBtn.style.display = 'none';
-//     }
-// }
-
-/**
- * Handle Media Recorder ondata event
- * @param {*} event
- */
-function handleMediaRecorderData(event) {
-    console.log('MediaRecorder data: ', event);
-    if (event.data && event.data.size > 0) recordedBlobs.push(event.data);
-}
-
-/**
- * Handle Media Recorder onstop event
- * @param {*} event
- */
-// function handleMediaRecorderStop(event) {
-//     // playSound('recStop');
-//     console.log('MediaRecorder stopped: ', event);
-//     console.log('MediaRecorder Blobs: ', recordedBlobs);
-//     myVideoParagraph.innerHTML = myPeerName + ' (me)';
-//     isStreamRecording = false;
-//     if (isRecScreenSream) {
-//         recScreenStream.getTracks().forEach((track) => {
-//             if (track.kind === 'video') track.stop();
-//         });
-//         isRecScreenSream = false;
-//         emitPeersAction('recStop');
-//         emitPeerStatus('rec', isRecScreenSream);
-//     }
-//     setRecordButtonUi();
-//     downloadRecordedStream();
-//     // only for desktop
-//     if (!isMobileDevice) {
-//         tippy(recordStreamBtn, {
-//             content: 'START recording',
-//             placement: 'right-start',
-//         });
-//     } else {
-//         swapCameraBtn.style.display = 'block';
-//     }
-// }
-
-/**
- * Stop recording
- */
-function stopStreamRecording() {
-    mediaRecorder.stop();
-}
-
-/**
- * Set Record Button UI on change theme
- */
-// function setRecordButtonUi() {
-//     recordStreamBtn.style.setProperty('background-color', 'white');
-// }
-
-/**
- * Download recorded stream
- */
-// function downloadRecordedStream() {
-//     try {
-//         const type = recordedBlobs[0].type.includes('mp4') ? 'mp4' : 'webm';
-//         const blob = new Blob(recordedBlobs, { type: 'video/' + type });
-//         const recFileName = getDataTimeString() + '-REC.' + type;
-//         const currentDevice = isMobileDevice ? 'MOBILE' : 'PC';
-//         const blobFileSize = bytesToSize(blob.size);
-
-//         userLog(
-//             'success-html',
-//             `<div style="text-align: left;">
-//                 🔴 Recording Info <br/>
-//                 FILE: ${recFileName} <br/>
-//                 SIZE: ${blobFileSize} <br/>
-//                 Please wait to be processed, then will be downloaded to your ${currentDevice} device.
-//             </div>`,
-//         );
-
-//         saveBlobToFile(blob, recFileName);
-//     } catch (err) {
-//         userLog('error', 'Recording save failed: ' + err);
-//     }
-// }
 
 /**
  * Create Chat Room Data Channel
@@ -2871,7 +2254,6 @@ function setChatRoomForMobile() {
  * Show msger draggable on center screen position
  */
 function showChatRoomDraggable() {
-    // playSound('newMessage');
     if (isMobileDevice) {
         buttonsBar.style.display = 'none';
         isButtonsVisible = false;
@@ -2889,38 +2271,6 @@ function showChatRoomDraggable() {
         });
     }
 }
-
-/**
- * Clean chat messages
- */
-// function cleanMessages() {
-//     Swal.fire({
-//         background: swalBackground,
-//         position: 'center',
-//         title: 'Clean up chat Messages?',
-//         imageUrl: deleteImg,
-//         showDenyButton: true,
-//         confirmButtonText: `Yes`,
-//         denyButtonText: `No`,
-//         showClass: {
-//             popup: 'animate__animated animate__fadeInDown',
-//         },
-//         hideClass: {
-//             popup: 'animate__animated animate__fadeOutUp',
-//         },
-//     }).then((result) => {
-//         // clean chat messages
-//         if (result.isConfirmed) {
-//             let msgs = msgerChat.firstChild;
-//             while (msgs) {
-//                 msgerChat.removeChild(msgs);
-//                 msgs = msgerChat.firstChild;
-//             }
-//             // clean object
-//             chatMessages = [];
-//         }
-//     });
-// }
 
 /**
  * Hide chat room and emoji picker
@@ -3037,7 +2387,6 @@ function appendMessage(from, img, side, msg, privateMsg) {
  * @param {*} peers
  */
 function msgerAddPeers(peers) {
-    // console.log("peers", peers);
     // add all current Participants
     for (let peer_id in peers) {
         let peer_name = peers[peer_id]['peer_name'];
@@ -3064,22 +2413,6 @@ function msgerAddPeers(peers) {
                 let msgerPrivateBtn = getId(peer_id + '_pMsgBtn');
                 addMsgerPrivateBtn(msgerPrivateBtn, msgerPrivateMsgInput);
             }
-        }
-    }
-}
-
-/**
- * Search peer by name in chat room lists to send the private messages
- */
-function searchPeer() {
-    let searchPeerBarName = getId('searchPeerBarName').value;
-    let msgerPeerInputarea = getEcN('msger-peer-inputarea');
-    searchPeerBarName = searchPeerBarName.toLowerCase();
-    for (let i = 0; i < msgerPeerInputarea.length; i++) {
-        if (!msgerPeerInputarea[i].innerHTML.toLowerCase().includes(searchPeerBarName)) {
-            msgerPeerInputarea[i].style.display = 'none';
-        } else {
-            msgerPeerInputarea[i].style.display = 'flex';
         }
     }
 }
@@ -3177,57 +2510,6 @@ function emitMsg(from, to, msg, privateMsg) {
 }
 
 /**
- * Hide - Show emoji picker div
- */
-// function hideShowEmojiPicker() {
-//     if (!isChatEmojiVisible) {
-//         // playSound('newMessage');
-//         msgerEmojiPicker.style.display = 'block';
-//         isChatEmojiVisible = true;
-//         return;
-//     }
-//     msgerEmojiPicker.style.display = 'none';
-//     isChatEmojiVisible = false;
-// }
-
-/**
- * Download Chat messages in json format
- * https://developer.mozilla.org/it/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify
- */
-// function downloadChatMsgs() {
-//     let a = document.createElement('a');
-//     a.href = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(chatMessages, null, 1));
-//     a.download = getDataTimeString() + '-CHAT.txt';
-//     document.body.appendChild(a);
-//     a.click();
-//     document.body.removeChild(a);
-// }
-
-/**
- * Hide - show my settings
- */
-// function hideShowMySettings() {
-//     if (!isMySettingsVisible) {
-//         // playSound('newMessage');
-//         // adapt it for mobile
-//         if (isMobileDevice) {
-//             mySettings.style.setProperty('width', '90%');
-//             document.documentElement.style.setProperty('--mySettings-select-w', '99%');
-//         }
-//         // my current peer name
-//         myPeerNameSet.placeholder = myPeerName;
-//         // center screen on show
-//         mySettings.style.top = '50%';
-//         mySettings.style.left = '50%';
-//         mySettings.style.display = 'block';
-//         isMySettingsVisible = true;
-//         return;
-//     }
-//     mySettings.style.display = 'none';
-//     isMySettingsVisible = false;
-// }
-
-/**
  * Handle html tab settings
  * https://www.w3schools.com/howto/howto_js_tabs.asp
  *
@@ -3247,33 +2529,6 @@ function openTab(evt, tabName) {
     getId(tabName).style.display = 'block';
     evt.currentTarget.className += ' active';
 }
-
-/**
- * Update myPeerName to other peers in the room
- */
-// function updateMyPeerName() {
-//     let myNewPeerName = myPeerNameSet.value;
-//     let myOldPeerName = myPeerName;
-
-//     // myNewPeerName empty
-//     if (!myNewPeerName) return;
-
-//     myPeerName = myNewPeerName;
-//     myVideoParagraph.innerHTML = myPeerName + ' (me)';
-
-//     sendToServer('peerName', {
-//         room_id: roomId,
-//         peer_name_old: myOldPeerName,
-//         peer_name_new: myPeerName,
-//     });
-
-//     myPeerNameSet.value = '';
-//     myPeerNameSet.placeholder = myPeerName;
-
-//     setPeerAvatarImgName('myVideoAvatarImage', myPeerName);
-//     setPeerChatAvatarImgName('right', myPeerName);
-//     userLog('toast', 'My name changed to ' + myPeerName);
-// }
 
 /**
  * Append updated peer name to video player
@@ -3568,12 +2823,6 @@ function handlePeerAction(config) {
         case 'hideVideo':
             setMyVideoOff(peer_name);
             break;
-        case 'recStart':
-            notifyRecording(peer_name, 'Started');
-            break;
-        case 'recStop':
-            notifyRecording(peer_name, 'Stopped');
-            break;
     }
 }
 
@@ -3669,12 +2918,6 @@ function disablePeer(peer_id, element) {
         showDenyButton: true,
         confirmButtonText: element == 'audio' ? `Mute` : `Hide`,
         denyButtonText: `Cancel`,
-        // showClass: {
-        //     popup: 'animate__animated animate__fadeInDown',
-        // },
-        // hideClass: {
-        //     popup: 'animate__animated animate__fadeOutUp',
-        // },
     }).then((result) => {
         if (result.isConfirmed) {
             switch (element) {
@@ -3748,101 +2991,15 @@ function handleRoomLocked() {
         text: 'The room is locked, try with another one.',
         showDenyButton: false,
         confirmButtonText: `Ok`,
-        // showClass: {
-        //     popup: 'animate__animated animate__fadeInDown',
-        // },
-        // hideClass: {
-        //     popup: 'animate__animated animate__fadeOutUp',
-        // },
     }).then((result) => {
         if (result.isConfirmed) window.location.href = '/newcall';
     });
 }
 
 
-/**
- * Create File Sharing Data Channel
- * @param {*} peer_id
- */
-function createFileSharingDataChannel(peer_id) {
-    fileDataChannels[peer_id] = peerConnections[peer_id].createDataChannel('mirotalk_file_sharing_channel');
-    fileDataChannels[peer_id].binaryType = 'arraybuffer';
-    fileDataChannels[peer_id].onopen = (event) => {
-        console.log('fileDataChannels created', event);
-    };
-}
 
-/**
- * Handle File Sharing
- * @param {*} data
- */
-function handleDataChannelFileSharing(data) {
-    receiveBuffer.push(data);
-    receivedSize += data.byteLength;
 
-    // let getPercentage = ((receivedSize / incomingFileInfo.fileSize) * 100).toFixed(2);
-    // console.log("Received progress: " + getPercentage + "%");
 
-    if (receivedSize === incomingFileInfo.fileSize) {
-        incomingFileData = receiveBuffer;
-        receiveBuffer = [];
-        endDownload();
-    }
-}
-
-/**
- * Send File Data trought datachannel
- * https://webrtc.github.io/samples/src/content/datachannel/filetransfer/
- * https://github.com/webrtc/samples/blob/gh-pages/src/content/datachannel/filetransfer/js/main.js
- */
-function sendFileData() {
-    console.log('Send file ' + fileToSend.name + ' size ' + bytesToSize(fileToSend.size) + ' type ' + fileToSend.type);
-
-    sendInProgress = true;
-
-    sendFileInfo.innerHTML =
-        'File name: ' +
-        fileToSend.name +
-        '<br>' +
-        'File type: ' +
-        fileToSend.type +
-        '<br>' +
-        'File size: ' +
-        bytesToSize(fileToSend.size) +
-        '<br>';
-
-    sendFileDiv.style.display = 'inline';
-    sendProgress.max = fileToSend.size;
-    fileReader = new FileReader();
-    let offset = 0;
-
-    fileReader.addEventListener('error', (err) => console.error('fileReader error', err));
-    fileReader.addEventListener('abort', (e) => console.log('fileReader aborted', e));
-    fileReader.addEventListener('load', (e) => {
-        if (!sendInProgress) return;
-
-        // peer to peer over DataChannels
-        sendFSData(e.target.result);
-        offset += e.target.result.byteLength;
-
-        sendProgress.value = offset;
-        sendFilePercentage.innerHTML = 'Send progress: ' + ((offset / fileToSend.size) * 100).toFixed(2) + '%';
-
-        // send file completed
-        if (offset === fileToSend.size) {
-            sendInProgress = false;
-            sendFileDiv.style.display = 'none';
-            userLog('success', 'The file ' + fileToSend.name + ' was sent successfully.');
-        }
-
-        if (offset < fileToSend.size) readSlice(offset);
-    });
-    const readSlice = (o) => {
-        const slice = fileToSend.slice(offset, o + chunkSize);
-        fileReader.readAsArrayBuffer(slice);
-    };
-    readSlice(0);
-}
 
 /**
  * Send File through RTC Data Channels
@@ -3853,199 +3010,6 @@ function sendFSData(data) {
         if (fileDataChannels[peer_id].readyState === 'open') fileDataChannels[peer_id].send(data);
     }
 }
-
-/**
- * Abort the file transfer
- */
-// function abortFileTransfer() {
-//     if (fileReader && fileReader.readyState === 1) {
-//         fileReader.abort();
-//         sendFileDiv.style.display = 'none';
-//         sendInProgress = false;
-//         sendToServer('fileAbort', {
-//             room_id: roomId,
-//             peer_name: myPeerName,
-//         });
-//     }
-// }
-
-/**
- * File Transfer aborted by peer
- */
-function handleFileAbort() {
-    receiveBuffer = [];
-    incomingFileData = [];
-    receivedSize = 0;
-    console.log('File transfer aborted');
-    userLog('toast', '⚠️ File transfer aborted');
-}
-
-/**
- * Select the File to Share
- */
-// function selectFileToShare() {
-//     // playSound('newMessage');
-
-//     Swal.fire({
-//         allowOutsideClick: false,
-//         background: swalBackground,
-//         imageAlt: 'mirotalk-file-sharing',
-//         imageUrl: fileSharingImg,
-//         position: 'center',
-//         title: 'Share the file',
-//         input: 'file',
-//         inputAttributes: {
-//             accept: fileSharingInput,
-//             'aria-label': 'Select the file',
-//         },
-//         showDenyButton: true,
-//         confirmButtonText: `Send`,
-//         denyButtonText: `Cancel`,
-//         // showClass: {
-//         //     popup: 'animate__animated animate__fadeInDown',
-//         // },
-//         // hideClass: {
-//         //     popup: 'animate__animated animate__fadeOutUp',
-//         // },
-//     }).then((result) => {
-//         if (result.isConfirmed) {
-//             fileToSend = result.value;
-//             if (fileToSend && fileToSend.size > 0) {
-//                 // no peers in the room
-//                 if (!thereIsPeerConnections()) {
-//                     userLog('info', 'No participants detected');
-//                     return;
-//                 }
-//                 // send some metadata about our file to peers in the room
-//                 sendToServer('fileInfo', {
-//                     room_id: roomId,
-//                     peer_name: myPeerName,
-//                     file: {
-//                         fileName: fileToSend.name,
-//                         fileSize: fileToSend.size,
-//                         fileType: fileToSend.type,
-//                     },
-//                 });
-//                 // send the File
-//                 setTimeout(() => {
-//                     sendFileData();
-//                 }, 1000);
-//             } else {
-//                 userLog('error', 'File not selected or empty.');
-//             }
-//         }
-//     });
-// }
-
-/**
- * Get remote file info
- * @param {*} config file
- */
-function handleFileInfo(config) {
-    incomingFileInfo = config;
-    incomingFileData = [];
-    receiveBuffer = [];
-    receivedSize = 0;
-    let fileToReceiveInfo =
-        ' From: ' +
-        incomingFileInfo.peerName +
-        '\n' +
-        ' incoming file: ' +
-        incomingFileInfo.fileName +
-        '\n' +
-        ' size: ' +
-        bytesToSize(incomingFileInfo.fileSize) +
-        '\n' +
-        ' type: ' +
-        incomingFileInfo.fileType;
-    console.log(fileToReceiveInfo);
-    userLog('toast', fileToReceiveInfo);
-}
-
-/**
- * The file will be saved in the Blob. You will be asked to confirm if you want to save it on your PC / Mobile device.
- * https://developer.mozilla.org/en-US/docs/Web/API/Blob
- */
-// function endDownload() {
-//     // playSound('download');
-
-//     // save received file into Blob
-//     const blob = new Blob(incomingFileData);
-//     const file = incomingFileInfo.fileName;
-
-//     incomingFileData = [];
-
-//     // if file is image, show the preview
-//     if (isImageURL(incomingFileInfo.fileName)) {
-//         const reader = new FileReader();
-//         reader.onload = (e) => {
-//             Swal.fire({
-//                 allowOutsideClick: false,
-//                 background: swalBackground,
-//                 position: 'center',
-//                 title: 'Received file',
-//                 text: incomingFileInfo.fileName + ' size ' + bytesToSize(incomingFileInfo.fileSize),
-//                 imageUrl: e.target.result,
-//                 imageAlt: 'mirotalk-file-img-download',
-//                 showDenyButton: true,
-//                 confirmButtonText: `Save`,
-//                 denyButtonText: `Cancel`,
-//                 // showClass: {
-//                 //     popup: 'animate__animated animate__fadeInDown',
-//                 // },
-//                 // hideClass: {
-//                 //     popup: 'animate__animated animate__fadeOutUp',
-//                 // },
-//             }).then((result) => {
-//                 if (result.isConfirmed) saveBlobToFile(blob, file);
-//             });
-//         };
-//         // blob where is stored downloaded file
-//         reader.readAsDataURL(blob);
-//     } else {
-//         // not img file
-//         Swal.fire({
-//             allowOutsideClick: false,
-//             background: swalBackground,
-//             imageAlt: 'mirotalk-file-download',
-//             imageUrl: fileSharingImg,
-//             position: 'center',
-//             title: 'Received file',
-//             text: incomingFileInfo.fileName + ' size ' + bytesToSize(incomingFileInfo.fileSize),
-//             showDenyButton: true,
-//             confirmButtonText: `Save`,
-//             denyButtonText: `Cancel`,
-//             // showClass: {
-//             //     popup: 'animate__animated animate__fadeInDown',
-//             // },
-//             // hideClass: {
-//             //     popup: 'animate__animated animate__fadeOutUp',
-//             // },
-//         }).then((result) => {
-//             if (result.isConfirmed) saveBlobToFile(blob, file);
-//         });
-//     }
-// }
-
-/**
- * Save to PC / Mobile devices
- * https://developer.mozilla.org/en-US/docs/Web/API/Blob
- * @param {*} blob
- * @param {*} file
- */
-// function saveBlobToFile(blob, file) {
-//     const url = window.URL.createObjectURL(blob);
-//     const a = document.createElement('a');
-//     a.style.display = 'none';
-//     a.href = url;
-//     a.download = file;
-//     document.body.appendChild(a);
-//     a.click();
-//     setTimeout(() => {
-//         document.body.removeChild(a);
-//         window.URL.revokeObjectURL(url);
-//     }, 100);
-// }
 
 /**
  * Opend and send Video URL to all peers in the room
@@ -4142,26 +3106,6 @@ function emitVideoPlayer(video_action, config = {}) {
         video_src: config.video_src,
         peer_id: config.peer_id,
     });
-}
-
-/**
- * Handle Video Player
- * @param {*} config
- */
-function handleVideoPlayer(config) {
-    let peer_name = config.peer_name;
-    let video_action = config.video_action;
-    //
-    switch (video_action) {
-        case 'open':
-            userLog('toast', peer_name + ' open video player');
-            openVideoUrlPlayer(config);
-            break;
-        case 'close':
-            userLog('toast', peer_name + ' close video player');
-            closeVideoUrlPlayer();
-            break;
-    }
 }
 
 /**
@@ -4412,12 +3356,6 @@ function userLog(type, message) {
                 icon: 'info',
                 title: 'Info',
                 text: message,
-                // showClass: {
-                //     popup: 'animate__animated animate__fadeInDown',
-                // },
-                // hideClass: {
-                //     popup: 'animate__animated animate__fadeOutUp',
-                // },
             });
             break;
         case 'success':
@@ -4442,12 +3380,6 @@ function userLog(type, message) {
                 icon: 'success',
                 title: 'Success',
                 html: message,
-                // showClass: {
-                //     popup: 'animate__animated animate__fadeInDown',
-                // },
-                // hideClass: {
-                //     popup: 'animate__animated animate__fadeOutUp',
-                // },
             });
             break;
         case 'toast':
@@ -4468,21 +3400,6 @@ function userLog(type, message) {
             alert(message);
     }
 }
-
-/**
- * https://notificationsounds.com/notification-sounds
- * @param {*} name
- */
-// async function playSound(name) {
-//     if (!notifyBySound) return;
-//     let sound = '../sounds/' + name + '.mp3';
-//     let audioToPlay = new Audio(sound);
-//     try {
-//         await audioToPlay.play();
-//     } catch (err) {
-//         return;
-//     }
-// }
 
 /**
  * Show-Hide all elements grp by class name

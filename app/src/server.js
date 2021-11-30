@@ -425,91 +425,11 @@ io.sockets.on('connect', (socket) => {
         sendToPeer(peer_id, sockets, 'kickOut', {
             peer_name: peer_name,
         });
-    });
-
-    /**
-     * Relay File info
-     */
-    socket.on('fileInfo', (config) => {
-        let room_id = config.room_id;
-        let peer_name = config.peer_name;
-        let file = config.file;
-
-        function bytesToSize(bytes) {
-            let sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-            if (bytes == 0) return '0 Byte';
-            let i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
-            return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
-        }
-
-        file['peerName'] = peer_name;
-
-        log.debug('[' + socket.id + '] Peer [' + peer_name + '] send file to room_id [' + room_id + ']', {
-            peerName: file.peerName,
-            fileName: file.fileName,
-            fileSize: bytesToSize(file.fileSize),
-            fileType: file.fileType,
-        });
-
-        sendToRoom(room_id, socket.id, 'fileInfo', file);
-    });
-
-    /**
-     * Abort file sharing
-     */
-    socket.on('fileAbort', (config) => {
-        let room_id = config.room_id;
-        let peer_name = config.peer_name;
-
-        // log.debug('[' + socket.id + '] Peer [' + peer_name + '] send fileAbort to room_id [' + room_id + ']');
-        sendToRoom(room_id, socket.id, 'fileAbort');
-    });
-
-    /**
-     * Relay video player action
-     */
-    socket.on('videoPlayer', (config) => {
-        let room_id = config.room_id;
-        let peer_name = config.peer_name;
-        let video_action = config.video_action;
-        let video_src = config.video_src;
-        let peer_id = config.peer_id;
-
-        let sendConfig = {
-            peer_name: peer_name,
-            video_action: video_action,
-            video_src: video_src,
-        };
-        let logme = {
-            peer_id: socket.id,
-            peer_name: peer_name,
-            video_action: video_action,
-            video_src: video_src,
-        };
-
-        if (peer_id) {
-            log.debug(
-                '[' + socket.id + '] emit videoPlayer to [' + peer_id + '] from room_id [' + room_id + ']',
-                logme,
-            );
-
-            sendToPeer(peer_id, sockets, 'videoPlayer', sendConfig);
-        } else {
-            log.debug('[' + socket.id + '] emit videoPlayer to [room_id: ' + room_id + ']', logme);
-
-            sendToRoom(room_id, socket.id, 'videoPlayer', sendConfig);
-        }
-    });
+    });    
 
 }); // end [sockets.on-connect]
 
-/**
- * Send async data to all peers in the same room except yourself
- * @param {*} room_id id of the room to send data
- * @param {*} socket_id socket id of peer that send data
- * @param {*} msg message to send to the peers in the same room
- * @param {*} config JSON data to send to the peers in the same room
- */
+// gửi tới cả phòng
 async function sendToRoom(room_id, socket_id, msg, config = {}) {
     for (let peer_id in channels[room_id]) {
         // not send data to myself
@@ -519,13 +439,7 @@ async function sendToRoom(room_id, socket_id, msg, config = {}) {
     }
 }
 
-/**
- * Send async data to specified peer
- * @param {*} peer_id id of the peer to send data
- * @param {*} sockets all peers connections
- * @param {*} msg message to send to the peer in the same room
- * @param {*} config JSON data to send to the peer in the same room
- */
+// gửi riêng 1 người
 async function sendToPeer(peer_id, sockets, msg, config = {}) {
     if (peer_id in sockets) {
         await sockets[peer_id].emit(msg, config);
