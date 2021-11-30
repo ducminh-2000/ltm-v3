@@ -178,12 +178,7 @@ html {
 
 body {
     background: var(--body-bg);
-<<<<<<< HEAD
     background-image: url('../images/about.png');
-=======
-    /* background */
-    background-image: url('../images/bg.svg');
->>>>>>> eb64b0a6a12b3d6cf5d3ab50c83861b7266f42b9
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-position: center;
