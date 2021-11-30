@@ -78,18 +78,18 @@ let peerMediaElements = {}; // keep track of our peer <video> tags, indexed by p
 let chatMessages = []; // collect chat messages to save it later if want
 let backupIceServers = [{ urls: 'stun:stun.l.google.com:19302' }]; // backup iceServers
 
-let chatInputEmoji = {
-    '<3': '\u2764\uFE0F',
-    '</3': '\uD83D\uDC94',
-    ':D': '\uD83D\uDE00',
-    ':)': '\uD83D\uDE03',
-    ';)': '\uD83D\uDE09',
-    ':(': '\uD83D\uDE12',
-    ':p': '\uD83D\uDE1B',
-    ';p': '\uD83D\uDE1C',
-    ":'(": '\uD83D\uDE22',
-    ':+1:': '\uD83D\uDC4D',
-}; // https://github.com/wooorm/gemoji/blob/main/support.md
+// let chatInputEmoji = {
+//     '<3': '\u2764\uFE0F',
+//     '</3': '\uD83D\uDC94',
+//     ':D': '\uD83D\uDE00',
+//     ':)': '\uD83D\uDE03',
+//     ';)': '\uD83D\uDE09',
+//     ':(': '\uD83D\uDE12',
+//     ':p': '\uD83D\uDE1B',
+//     ';p': '\uD83D\uDE1C',
+//     ":'(": '\uD83D\uDE22',
+//     ':+1:': '\uD83D\uDC4D',
+// }; // https://github.com/wooorm/gemoji/blob/main/support.md
 
 let countTime;
 // init audio-video
@@ -119,7 +119,7 @@ let msgerClean;
 let msgerSaveBtn;
 let msgerClose;
 let msgerChat;
-let msgerEmojiBtn;
+// let msgerEmojiBtn;
 let msgerInput;
 let msgerSendBtn;
 // chat room connected peers
@@ -555,14 +555,14 @@ function whoAreYou() {
     initAudioBtn = getId('initAudioBtn');
     initVideoBtn = getId('initVideoBtn');
 
-    tippy(initAudioBtn, {
-        content: 'Click to audio OFF',
-        placement: 'top',
-    });
-    tippy(initVideoBtn, {
-        content: 'Click to video OFF',
-        placement: 'top',
-    });
+    // tippy(initAudioBtn, {
+    //     content: 'Click to audio OFF',
+    //     placement: 'top',
+    // });
+    // tippy(initVideoBtn, {
+    //     content: 'Click to video OFF',
+    //     placement: 'top',
+    // });
 }
 
 /**
@@ -1080,7 +1080,7 @@ function loadLocalMedia(stream) {
 
     // session time
     myCountTimeImg.setAttribute('id', 'countTimeImg');
-    myCountTimeImg.className = 'fas fa-clock';
+    // myCountTimeImg.className = 'fas fa-clock';
     myCountTime.setAttribute('id', 'countTime');
     tippy(myCountTime, {
         content: 'Session Time',
@@ -1589,12 +1589,12 @@ function setChatRoomBtn() {
     });
 
     // on input check 4emoji from map
-    msgerInput.oninput = function () {
-        for (let i in chatInputEmoji) {
-            let regex = new RegExp(escapeSpecialChars(i), 'gim');
-            this.value = this.value.replace(regex, chatInputEmoji[i]);
-        }
-    };
+    // msgerInput.oninput = function () {
+    //     for (let i in chatInputEmoji) {
+    //         let regex = new RegExp(escapeSpecialChars(i), 'gim');
+    //         this.value = this.value.replace(regex, chatInputEmoji[i]);
+    //     }
+    // };
 
     // chat send msg
     msgerSendBtn.addEventListener('click', (e) => {

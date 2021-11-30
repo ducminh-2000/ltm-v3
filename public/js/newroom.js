@@ -136,16 +136,16 @@ document.getElementById('roomName').value = '';
 
 // Typing Effect
 
-let i = 0;
-let txt = num + adjective + noun;
-let speed = 100;
+// let i = 0;
+// let txt = num + adjective + noun;
+// let speed = 100;
 
-typeWriter();
+// typeWriter();
 
-function typeWriter() {
-    if (i < txt.length) {
-        document.getElementById('roomName').value += txt.charAt(i);
-        i++;
-        setTimeout(typeWriter, speed);
-    }
-}
+// function typeWriter() {
+//     if (i < txt.length) {
+//         document.getElementById('roomName').value += txt.charAt(i);
+//         i++;
+//         setTimeout(typeWriter, speed);
+//     }
+// }
