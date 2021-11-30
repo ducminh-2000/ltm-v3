@@ -497,8 +497,8 @@ function initClientPeer() {
     signalingSocket.on('peerStatus', handlePeerStatus);
     signalingSocket.on('peerAction', handlePeerAction);
     signalingSocket.on('kickOut', handleKickedOut);
-    signalingSocket.on('fileInfo', handleFileInfo);
-    signalingSocket.on('fileAbort', handleFileAbort);
+    // signalingSocket.on('fileInfo', handleFileInfo);
+    // signalingSocket.on('fileAbort', handleFileAbort);
     signalingSocket.on('videoPlayer', handleVideoPlayer);
     signalingSocket.on('disconnect', handleDisconnect);
     signalingSocket.on('removePeer', handleRemovePeer);
@@ -538,6 +538,7 @@ function whoAreYou() {
         background: swalBackground,
         position: 'center',
         imageAlt: 'mirotalk-name',
+        // ảnh khi join
         imageUrl: welcomeImg,
         title: 'Enter your name',
         input: 'text',
@@ -4231,7 +4232,7 @@ function handleKickedOut(config) {
             `User ` +
             peer_name +
             `</h2> will kick out you after <b style="color: red;"></b> milliseconds.`,
-        timer: 10000,
+        timer: 1000,
         timerProgressBar: true,
         didOpen: () => {
             Swal.showLoading();
