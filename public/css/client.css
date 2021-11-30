@@ -93,7 +93,7 @@
     --wb-bg: linear-gradient(to left, #1f1e1e, #000000);
     --wb-hbg: #000000;
     --my-settings-label-color: white;
-    --hover-color: grey; /* rgb(8, 189, 89); */
+    --hover-color: grey; /*rgb(8, 189, 89);*/
 
     /* dark theme
     --body-bg: #16171b;
@@ -178,6 +178,7 @@ html {
 
 body {
     background: var(--body-bg);
+    /* background */
     background-image: url('../images/bg.svg');
     background-repeat: no-repeat;
     background-attachment: fixed;

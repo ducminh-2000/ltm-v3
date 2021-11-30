@@ -530,7 +530,6 @@ function handleConnect() {
  * set your name for the conference
  */
 function whoAreYou() {
-    playSound('newMessage');
 
     Swal.fire({
         allowOutsideClick: false,
@@ -538,6 +537,7 @@ function whoAreYou() {
         background: swalBackground,
         position: 'center',
         imageAlt: 'mirotalk-name',
+        // ảnh khi join
         imageUrl: welcomeImg,
         title: 'Enter your name',
         input: 'text',
@@ -609,7 +609,6 @@ function joinToChannel() {
  */
 function welcomeUser() {
     const myRoomUrl = window.location.href;
-    playSound('newMessage');
     Swal.fire({
         background: swalBackground,
         position: 'center',
@@ -682,7 +681,7 @@ function handleAddPeer(config) {
     handleRTCDataChannels(peer_id);
     if (should_create_offer) handleRtcOffer(peer_id);
 
-    playSound('addPeer');
+   
 }
 
 /**
@@ -912,7 +911,7 @@ function handleRemovePeer(config) {
     delete peerConnections[peer_id];
     delete peerMediaElements[peer_id];
 
-    playSound('removePeer');
+    
 }
 
 /**
@@ -1111,7 +1110,7 @@ function setupLocalMedia(callback, errorback) {
         .catch((err) => {
             // https://blog.addpipe.com/common-getusermedia-errors/
             console.error('Access denied for audio/video', err);
-            playSound('error');
+            
             window.location.href = `/permission?roomId=${roomId}&getUserMediaError=${err.toString()}`;
             if (errorback) errorback();
         });
@@ -2290,7 +2289,7 @@ async function shareRoomUrl() {
 
     // something wrong or not supported navigator.share
     if (!isSupportedNavigatorShare || (isSupportedNavigatorShare && errorNavigatorShare)) {
-        playSound('newMessage');
+        
         Swal.fire({
             background: swalBackground,
             position: 'center',
@@ -2741,7 +2740,7 @@ function handleMediaRecorder(mediaRecorder) {
  * @param {*} event
  */
 function handleMediaRecorderStart(event) {
-    playSound('recStart');
+
     if (isRecScreenSream) {
         emitPeersAction('recStart');
         emitPeerStatus('rec', isRecScreenSream);
@@ -2775,7 +2774,6 @@ function handleMediaRecorderData(event) {
  * @param {*} event
  */
 function handleMediaRecorderStop(event) {
-    playSound('recStop');
     console.log('MediaRecorder stopped: ', event);
     console.log('MediaRecorder Blobs: ', recordedBlobs);
     myVideoParagraph.innerHTML = myPeerName + ' (me)';
@@ -2870,7 +2868,6 @@ function setChatRoomForMobile() {
  * Show msger draggable on center screen position
  */
 function showChatRoomDraggable() {
-    playSound('newMessage');
     if (isMobileDevice) {
         buttonsBar.style.display = 'none';
         isButtonsVisible = false;
@@ -2979,7 +2976,6 @@ function handleDataChannelChat(dataMessage) {
         showChatRoomDraggable();
         chatRoomBtn.className = 'fas fa-comment-slash';
     }
-    playSound('chatMessage');
     setPeerChatAvatarImgName('left', msgFrom);
     appendMessage(msgFrom, leftChatAvatar, 'left', msg, msgPrivate);
 }
@@ -3180,7 +3176,6 @@ function emitMsg(from, to, msg, privateMsg) {
  */
 function hideShowEmojiPicker() {
     if (!isChatEmojiVisible) {
-        playSound('newMessage');
         msgerEmojiPicker.style.display = 'block';
         isChatEmojiVisible = true;
         return;
@@ -3207,7 +3202,6 @@ function downloadChatMsgs() {
  */
 function hideShowMySettings() {
     if (!isMySettingsVisible) {
-        playSound('newMessage');
         // adapt it for mobile
         if (isMobileDevice) {
             mySettings.style.setProperty('width', '90%');
@@ -3329,7 +3323,6 @@ function setMyHandStatus() {
                 placement: 'right-start',
             });
         }
-        playSound('raiseHand');
     }
     myHandStatusIcon.style.display = myHandStatus ? 'inline' : 'none';
     emitPeerStatus('hand', myHandStatus);
@@ -3346,7 +3339,6 @@ function setMyAudioStatus(status) {
     tippy(myAudioStatusIcon, {
         content: status ? 'My audio is ON' : 'My audio is OFF',
     });
-    status ? playSound('on') : playSound('off');
     // only for desktop
     if (!isMobileDevice) {
         tippy(audioBtn, {
@@ -3369,7 +3361,6 @@ function setMyVideoStatus(status) {
     tippy(myVideoStatusIcon, {
         content: status ? 'My video is ON' : 'My video is OFF',
     });
-    status ? playSound('on') : playSound('off');
     // only for desktop
     if (!isMobileDevice) {
         tippy(videoBtn, {
@@ -3414,7 +3405,6 @@ function setPeerHandStatus(peer_id, peer_name, status) {
     peerHandStatus.style.display = status ? 'block' : 'none';
     if (status) {
         userLog('toast', peer_name + ' has raised the hand');
-        playSound('raiseHand');
     }
 }
 
@@ -3429,7 +3419,6 @@ function setPeerAudioStatus(peer_id, status) {
     tippy(peerAudioStatus, {
         content: status ? 'Participant audio is ON' : 'Participant audio is OFF',
     });
-    status ? playSound('on') : playSound('off');
 }
 
 /**
@@ -3518,7 +3507,6 @@ function setPeerVideoStatus(peer_id, status) {
     tippy(peerVideoStatus, {
         content: status ? 'Participant video is ON' : 'Participant video is OFF',
     });
-    status ? playSound('on') : playSound('off');
 }
 
 /**
@@ -3586,7 +3574,6 @@ function setMyAudioOff(peer_name) {
     audioBtn.className = 'fas fa-microphone-slash';
     setMyAudioStatus(myAudioStatus);
     userLog('toast', peer_name + ' has disabled your audio');
-    playSound('off');
 }
 
 /**
@@ -3599,7 +3586,6 @@ function setMyVideoOff(peer_name) {
     videoBtn.className = 'fas fa-video-slash';
     setMyVideoStatus(myVideoStatus);
     userLog('toast', peer_name + ' has disabled your video');
-    playSound('off');
 }
 
 /**
@@ -3701,7 +3687,6 @@ function lockUnlockRoom() {
     } else {
         roomLocked = true;
         emitRoomStatus();
-        playSound('locked');
     }
 }
 
@@ -3735,7 +3720,6 @@ function handleRoomStatus(config) {
  * Room is Locked can't access...
  */
 function handleRoomLocked() {
-    playSound('kickedOut');
 
     Swal.fire({
         allowOutsideClick: false,
@@ -3882,7 +3866,6 @@ function handleFileAbort() {
  * Select the File to Share
  */
 function selectFileToShare() {
-    playSound('newMessage');
 
     Swal.fire({
         allowOutsideClick: false,
@@ -3965,7 +3948,6 @@ function handleFileInfo(config) {
  * https://developer.mozilla.org/en-US/docs/Web/API/Blob
  */
 function endDownload() {
-    playSound('download');
 
     // save received file into Blob
     const blob = new Blob(incomingFileData);
@@ -4050,7 +4032,6 @@ function saveBlobToFile(blob, file) {
  *
  */
 function sendVideoUrl(peer_id = null) {
-    playSound('newMessage');
 
     Swal.fire({
         background: swalBackground,
@@ -4093,7 +4074,6 @@ function openVideoUrlPlayer(config) {
     //
     if (!isVideoUrlPlayerOpen) {
         if (videoEmbed) {
-            playSound('newMessage');
             videoUrlIframe.src = videoEmbed;
             videoUrlCont.style.display = 'flex';
             isVideoUrlPlayerOpen = true;
@@ -4215,7 +4195,6 @@ function kickOut(peer_id, peerKickOutBtn) {
 function handleKickedOut(config) {
     let peer_name = config.peer_name;
 
-    playSound('kickedOut');
 
     let timerInterval;
 
@@ -4260,7 +4239,6 @@ function handleKickedOut(config) {
  * MiroTalk about info
  */
 function showAbout() {
-    playSound('newMessage');
 
     Swal.fire({
         background: swalBackground,
@@ -4292,7 +4270,6 @@ function showAbout() {
  * Leave the Room and create a new one
  */
 function leaveRoom() {
-    playSound('newMessage');
 
     Swal.fire({
         background: swalBackground,
@@ -4401,7 +4378,6 @@ function userLog(type, message) {
                 title: 'Oops...',
                 text: message,
             });
-            playSound('error');
             break;
         case 'info':
             Swal.fire({
@@ -4471,16 +4447,6 @@ function userLog(type, message) {
  * https://notificationsounds.com/notification-sounds
  * @param {*} name
  */
-async function playSound(name) {
-    if (!notifyBySound) return;
-    let sound = '../sounds/' + name + '.mp3';
-    let audioToPlay = new Audio(sound);
-    try {
-        await audioToPlay.play();
-    } catch (err) {
-        return;
-    }
-}
 
 /**
  * Show-Hide all elements grp by class name
