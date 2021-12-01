@@ -121,6 +121,7 @@ function getHtmlElementsById() {
     myVideo = getId('myVideo');
     myVideoWrap = getId('myVideoWrap');
     myVideoAvatarImage = getId('myVideoAvatarImage');
+
     // buttons Bar
     buttonsBar = getId('buttonsBar');
     audioBtn = getId('audioBtn');
@@ -1243,18 +1244,9 @@ function refreshLocalMedia() {
  * @returns constraints
  */
 function getAudioVideoConstraints() {
-    const audioSource = audioInputSelect.value;
-    const videoSource = videoSelect.value;
-    let videoConstraints = getVideoConstraints(videoQualitySelect.value ? videoQualitySelect.value : 'default');
-    videoConstraints['deviceId'] = videoSource ? { exact: videoSource } : undefined;
     const constraints = {
-        audio: {
-            deviceId: audioSource ? { exact: audioSource } : undefined,
-            echoCancellation: true,
-            noiseSuppression: true,
-            sampleRate: 44100,
-        },
-        video: videoConstraints,
+        audio: true,
+        video: true,
     };
     return constraints;
 }
