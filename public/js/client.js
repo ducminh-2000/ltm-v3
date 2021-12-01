@@ -78,20 +78,7 @@ let peerMediaElements = {}; // keep track of our peer <video> tags, indexed by p
 let chatMessages = []; // collect chat messages to save it later if want
 let backupIceServers = [{ urls: 'stun:stun.l.google.com:19302' }]; // backup iceServers
 
-// let chatInputEmoji = {
-//     '<3': '\u2764\uFE0F',
-//     '</3': '\uD83D\uDC94',
-//     ':D': '\uD83D\uDE00',
-//     ':)': '\uD83D\uDE03',
-//     ';)': '\uD83D\uDE09',
-//     ':(': '\uD83D\uDE12',
-//     ':p': '\uD83D\uDE1B',
-//     ';p': '\uD83D\uDE1C',
-//     ":'(": '\uD83D\uDE22',
-//     ':+1:': '\uD83D\uDC4D',
-// }; // https://github.com/wooorm/gemoji/blob/main/support.md
 
-let countTime;
 // init audio-video
 let initAudioBtn;
 let initVideoBtn;
@@ -100,56 +87,22 @@ let buttonsBar;
 let shareRoomBtn;
 let audioBtn;
 let videoBtn;
-// let swapCameraBtn;
 let screenShareBtn;
-// let recordStreamBtn;
 let fullScreenBtn;
 let chatRoomBtn;
 let myHandBtn;
 let fileShareBtn;
-// let mySettingsBtn;
-// let aboutBtn;
 let leaveRoomBtn;
 // chat room elements
 let msgerDraggable;
 let msgerHeader;
 let msgerTheme;
-let msgerCPBtn;
 let msgerClean;
 let msgerSaveBtn;
 let msgerClose;
 let msgerChat;
-// let msgerEmojiBtn;
 let msgerInput;
 let msgerSendBtn;
-// chat room connected peers
-let msgerCP;
-let msgerCPHeader;
-let msgerCPCloseBtn;
-let msgerCPList;
-// chat room emoji picker
-let msgerEmojiPicker;
-let emojiPicker;
-// my settings
-let mySettings;
-let mySettingsHeader;
-let tabDevicesBtn;
-let tabBandwidthBtn;
-let tabRoomBtn;
-let tabStylingBtn;
-let mySettingsCloseBtn;
-let myPeerNameSet;
-let myPeerNameSetBtn;
-let audioInputSelect;
-let audioOutputSelect;
-let videoSelect;
-let videoQualitySelect;
-let videoFpsSelect;
-let screenFpsSelect;
-let themeSelect;
-let btnsBarSelect;
-let selectors;
-// my video element
 let myVideo;
 let myVideoWrap;
 let myVideoAvatarImage;
@@ -158,98 +111,32 @@ let myVideoParagraph;
 let myHandStatusIcon;
 let myVideoStatusIcon;
 let myAudioStatusIcon;
-// record Media Stream
-let mediaRecorder;
-let recordedBlobs;
-let isStreamRecording = false;
-// room actions btns
 let muteEveryoneBtn;
 let hideEveryoneBtn;
-let lockUnlockRoomBtn;
-// file transfer settings
-let fileToSend;
-let fileReader;
-let receiveBuffer = [];
-let receivedSize = 0;
-let incomingFileInfo;
-let incomingFileData;
-let sendFileDiv;
-let sendFileInfo;
-let sendProgress;
-let sendAbortBtn;
-let sendInProgress = false;
-// MTU 1kb to prevent drop.
-// const chunkSize = 1024;
-const chunkSize = 1024 * 16; // 16kb/s
-// video URL player
-let videoUrlCont;
-let videoUrlHeader;
-let videoUrlCloseBtn;
-let videoUrlIframe;
-
 /**
  * Load all Html elements by Id
  */
 function getHtmlElementsById() {
-    countTime = getId('countTime');
     // my video
     myVideo = getId('myVideo');
     myVideoWrap = getId('myVideoWrap');
     myVideoAvatarImage = getId('myVideoAvatarImage');
     // buttons Bar
     buttonsBar = getId('buttonsBar');
-    // shareRoomBtn = getId('shareRoomBtn');
     audioBtn = getId('audioBtn');
     videoBtn = getId('videoBtn');
-    // swapCameraBtn = getId('swapCameraBtn');
     screenShareBtn = getId('screenShareBtn');
-    // recordStreamBtn = getId('recordStreamBtn');
     fullScreenBtn = getId('fullScreenBtn');
     chatRoomBtn = getId('chatRoomBtn');
-    fileShareBtn = getId('fileShareBtn');
     myHandBtn = getId('myHandBtn');
-    // mySettingsBtn = getId('mySettingsBtn');
-    // aboutBtn = getId('aboutBtn');
     leaveRoomBtn = getId('leaveRoomBtn');
     // chat Room elements
     msgerDraggable = getId('msgerDraggable');
     msgerHeader = getId('msgerHeader');
-    msgerTheme = getId('msgerTheme');
-    msgerCPBtn = getId('msgerCPBtn');
-    msgerClean = getId('msgerClean');
-    msgerSaveBtn = getId('msgerSaveBtn');
     msgerClose = getId('msgerClose');
     msgerChat = getId('msgerChat');
-    // msgerEmojiBtn = getId('msgerEmojiBtn');
     msgerInput = getId('msgerInput');
     msgerSendBtn = getId('msgerSendBtn');
-    // chat room connected peers
-    msgerCP = getId('msgerCP');
-    msgerCPHeader = getId('msgerCPHeader');
-    msgerCPCloseBtn = getId('msgerCPCloseBtn');
-    msgerCPList = getId('msgerCPList');
-    // chat room emoji picker
-    msgerEmojiPicker = getId('msgerEmojiPicker');
-    emojiPicker = getSl('emoji-picker');
-    // my settings
-    mySettings = getId('mySettings');
-    mySettingsHeader = getId('mySettingsHeader');
-    tabDevicesBtn = getId('tabDevicesBtn');
-    tabBandwidthBtn = getId('tabBandwidthBtn');
-    tabRoomBtn = getId('tabRoomBtn');
-    tabStylingBtn = getId('tabStylingBtn');
-    mySettingsCloseBtn = getId('mySettingsCloseBtn');
-    myPeerNameSet = getId('myPeerNameSet');
-    myPeerNameSetBtn = getId('myPeerNameSetBtn');
-    audioInputSelect = getId('audioSource');
-    audioOutputSelect = getId('audioOutput');
-    videoSelect = getId('videoSource');
-    videoQualitySelect = getId('videoQuality');
-    videoFpsSelect = getId('videoFps');
-    screenFpsSelect = getId('screenFps');
-    themeSelect = getId('mirotalkTheme');
-    btnsBarSelect = getId('mirotalkBtnsBar');
-    // my conference name, hand, video - audio status
     myVideoParagraph = getId('myVideoParagraph');
     myHandStatusIcon = getId('myHandStatusIcon');
     myVideoStatusIcon = getId('myVideoStatusIcon');
@@ -257,131 +144,6 @@ function getHtmlElementsById() {
     // room actions buttons
     muteEveryoneBtn = getId('muteEveryoneBtn');
     hideEveryoneBtn = getId('hideEveryoneBtn');
-    lockUnlockRoomBtn = getId('lockUnlockRoomBtn');
-    // file send progress
-    sendFileDiv = getId('sendFileDiv');
-    sendFileInfo = getId('sendFileInfo');
-    sendProgress = getId('sendProgress');
-    sendAbortBtn = getId('sendAbortBtn');
-    // video url player
-    videoUrlCont = getId('videoUrlCont');
-    videoUrlHeader = getId('videoUrlHeader');
-    videoUrlCloseBtn = getId('videoUrlCloseBtn');
-    videoUrlIframe = getId('videoUrlIframe');
-}
-
-/**
- * Using tippy aka very nice tooltip!
- * https://atomiks.github.io/tippyjs/
- */
-function setButtonsTitle() {
-    // not need for mobile
-    if (isMobileDevice) return;
-
-    // left buttons
-    // tippy(shareRoomBtn, {
-    //     content: 'Invite people to join',
-    //     placement: 'right-start',
-    // });
-    // tippy(audioBtn, {
-    //     content: 'Click to audio OFF',
-    //     placement: 'right-start',
-    // });
-    // tippy(videoBtn, {
-    //     content: 'Click to video OFF',
-    //     placement: 'right-start',
-    // });
-    // tippy(screenShareBtn, {
-    //     content: 'START screen sharing',
-    //     placement: 'right-start',
-    // });
-    // tippy(recordStreamBtn, {
-    //     content: 'START recording',
-    //     placement: 'right-start',
-    // });
-    // tippy(fullScreenBtn, {
-    //     content: 'VIEW full screen',
-    //     placement: 'right-start',
-    // });
-    // tippy(chatRoomBtn, {
-    //     content: 'OPEN the chat',
-    //     placement: 'right-start',
-    // });
-    // tippy(myHandBtn, {
-    //     content: 'RAISE your hand',
-    //     placement: 'right-start',
-    // });
-    // tippy(fileShareBtn, {
-    //     content: 'SHARE the file',
-    //     placement: 'right-start',
-    // });
-    // tippy(mySettingsBtn, {
-    //     content: 'Show settings',
-    //     placement: 'right-start',
-    // });
-    // tippy(aboutBtn, {
-    //     content: 'Show about',
-    //     placement: 'right-start',
-    // });
-    // tippy(leaveRoomBtn, {
-    //     content: 'Leave this room',
-    //     placement: 'right-start',
-    // });
-
-    // chat room buttons
-    // tippy(msgerTheme, {
-    //     content: 'Ghost theme',
-    // });
-    // tippy(msgerCPBtn, {
-    //     content: 'Private messages',
-    // });
-    // tippy(msgerClean, {
-    //     content: 'Clean messages',
-    // });
-    // tippy(msgerSaveBtn, {
-    //     content: 'Save messages',
-    // });
-    // tippy(msgerClose, {
-    //     content: 'Close the chat',
-    // });
-    // // tippy(msgerEmojiBtn, {
-    // //     content: 'Emoji',
-    // // });
-    // tippy(msgerSendBtn, {
-    //     content: 'Send',
-    // });
-
-    // // settings
-    // tippy(mySettingsCloseBtn, {
-    //     content: 'Close settings',
-    // });
-    // tippy(myPeerNameSetBtn, {
-    //     content: 'Change name',
-    // });
-
-    // // room actions btn
-    // tippy(muteEveryoneBtn, {
-    //     content: 'MUTE everyone except yourself',
-    //     placement: 'top',
-    // });
-    // tippy(hideEveryoneBtn, {
-    //     content: 'HIDE everyone except yourself',
-    //     placement: 'top',
-    // });
-
-    // // Suspend File transfer btn
-    // tippy(sendAbortBtn, {
-    //     content: 'ABORT file transfer',
-    //     placement: 'right-start',
-    // });
-
-    // video URL player
-    // tippy(videoUrlCloseBtn, {
-    //     content: 'Close the videoPlayer',
-    // });
-    // tippy(msgerVideoUrlBtn, {
-    //     content: 'Share YouTube video to all participants',
-    // });
 }
 
 /**
@@ -474,8 +236,6 @@ function initClientPeer() {
 
     // on receiving data from signaling server...
     signalingSocket.on('connect', handleConnect);
-    signalingSocket.on('roomIsLocked', handleRoomLocked);
-    signalingSocket.on('roomStatus', handleRoomStatus);
     signalingSocket.on('addPeer', handleAddPeer);
     signalingSocket.on('sessionDescription', handleSessionDescription);
     signalingSocket.on('iceCandidate', handleIceCandidate);
@@ -485,13 +245,8 @@ function initClientPeer() {
     signalingSocket.on('kickOut', handleKickedOut);
     signalingSocket.on('disconnect', handleDisconnect);
     signalingSocket.on('removePeer', handleRemovePeer);
-} // end [initClientPeer]
+} 
 
-/**
- * Send async data to signaling server (server.js)
- * @param {*} msg msg to send to signaling server
- * @param {*} config JSON data to send to signaling server
- */
 async function sendToServer(msg, config = {}) {
     await signalingSocket.emit(msg, config);
 }
@@ -513,8 +268,6 @@ function handleConnect() {
  * set your name for the conference
  */
 function whoAreYou() {
-    // playSound('newMessage');
-
     Swal.fire({
         allowOutsideClick: false,
         allowEscapeKey: false,
@@ -547,22 +300,12 @@ function whoAreYou() {
             joinToChannel();
         },
     }).then(() => {
-        welcomeUser();
     });
 
     if (isMobileDevice) return;
 
     initAudioBtn = getId('initAudioBtn');
     initVideoBtn = getId('initVideoBtn');
-
-    // tippy(initAudioBtn, {
-    //     content: 'Click to audio OFF',
-    //     placement: 'top',
-    // });
-    // tippy(initVideoBtn, {
-    //     content: 'Click to video OFF',
-    //     placement: 'top',
-    // });
 }
 
 /**
@@ -609,14 +352,11 @@ function handleAddPeer(config) {
     peerConnection = new RTCPeerConnection({ iceServers: iceServers });
     peerConnections[peer_id] = peerConnection;
 
-    msgerAddPeers(peers);
     handleOnIceCandidate(peer_id);
     handleOnTrack(peer_id, peers);
     handleAddTracks(peer_id);
     handleRTCDataChannels(peer_id);
     if (should_create_offer) handleRtcOffer(peer_id);
-
-    // playSound('addPeer');
 }
 
 /**
@@ -844,8 +584,6 @@ function handleRemovePeer(config) {
     delete fileDataChannels[peer_id];
     delete peerConnections[peer_id];
     delete peerMediaElements[peer_id];
-
-    // playSound('removePeer');
 }
 
 
@@ -956,7 +694,6 @@ function loadLocalMedia(stream) {
 
     // session time
     myCountTimeImg.setAttribute('id', 'countTimeImg');
-    // myCountTimeImg.className = 'fas fa-clock';
     myCountTime.setAttribute('id', 'countTime');
     tippy(myCountTime, {
         content: 'Session Time',
@@ -1031,12 +768,8 @@ function loadLocalMedia(stream) {
     videoWrap.style.display = 'none';
 
     getHtmlElementsById();
-    setButtonsTitle();
     manageLeftButtons();
     handleBodyOnMouseMove();
-    setupMySettings();
-    setupVideoUrlPlayer();
-    // startCountTime();
     handleVideoPlayerFs('myVideo', 'myVideoFullScreenBtn');
 }
 
@@ -1432,7 +1165,7 @@ function setFullScreenBtn() {
  */
 function setChatRoomBtn() {
     // adapt chat room size for mobile
-    setChatRoomForMobile();
+    // setChatRoomForMobile();
 
     // open hide chat room
     chatRoomBtn.addEventListener('click', (e) => {
@@ -1442,11 +1175,6 @@ function setChatRoomBtn() {
             hideChatRoomAndEmojiPicker();
             e.target.className = 'fas fa-comment';
         }
-    });
-
-    // hide msger participants section
-    msgerCPCloseBtn.addEventListener('click', (e) => {
-        msgerCP.style.display = 'none';
     });
 
     // close chat room - show left button and status menu if hide
@@ -1463,14 +1191,6 @@ function setChatRoomBtn() {
             msgerSendBtn.click();
         }
     });
-
-    // on input check 4emoji from map
-    // msgerInput.oninput = function () {
-    //     for (let i in chatInputEmoji) {
-    //         let regex = new RegExp(escapeSpecialChars(i), 'gim');
-    //         this.value = this.value.replace(regex, chatInputEmoji[i]);
-    //     }
-    // };
 
     // chat send msg
     msgerSendBtn.addEventListener('click', (e) => {
@@ -1504,103 +1224,6 @@ function setLeaveRoomBtn() {
 function handleBodyOnMouseMove() {
     document.body.addEventListener('mousemove', (e) => {
         showButtonsBarAndMenu();
-    });
-}
-
-/**
- * Setup local audio - video devices - theme ...
- */
-function setupMySettings() {
-    // tab buttons
-    tabDevicesBtn.addEventListener('click', (e) => {
-        openTab(e, 'tabDevices');
-    });
-    tabBandwidthBtn.addEventListener('click', (e) => {
-        openTab(e, 'tabBandwidth');
-    });
-    tabRoomBtn.addEventListener('click', (e) => {
-        openTab(e, 'tabRoom');
-    });
-    tabStylingBtn.addEventListener('click', (e) => {
-        openTab(e, 'tabStyling');
-    });
-    // audio - video select box
-    selectors = [audioInputSelect, audioOutputSelect, videoSelect];
-    audioOutputSelect.disabled = !('sinkId' in HTMLMediaElement.prototype);
-    navigator.mediaDevices.enumerateDevices().then(gotDevices).catch(handleError);
-    // select audio input
-    audioInputSelect.addEventListener('change', (e) => {
-        myVideoChange = false;
-        refreshLocalMedia();
-    });
-    // select audio output
-    audioOutputSelect.addEventListener('change', (e) => {
-        changeAudioDestination();
-    });
-    // select video input
-    videoSelect.addEventListener('change', (e) => {
-        myVideoChange = true;
-        refreshLocalMedia();
-    });
-    // select video quality
-    videoQualitySelect.addEventListener('change', (e) => {
-        setLocalVideoQuality();
-    });
-    // select video fps
-    videoFpsSelect.addEventListener('change', (e) => {
-        videoMaxFrameRate = parseInt(videoFpsSelect.value);
-        setLocalMaxFps(videoMaxFrameRate);
-    });
-    // Firefox not support video cam Fps O.o
-    if (myBrowserName === 'Firefox') {
-        videoFpsSelect.value = null;
-        videoFpsSelect.disabled = true;
-    }
-    // select screen fps
-    screenFpsSelect.addEventListener('change', (e) => {
-        screenMaxFrameRate = parseInt(screenFpsSelect.value);
-        if (isScreenStreaming) setLocalMaxFps(screenMaxFrameRate);
-    });
-    // Mobile not support screen sharing
-    if (isMobileDevice) {
-        screenFpsSelect.value = null;
-        screenFpsSelect.disabled = true;
-    }
-    // Mobile not support buttons bar position horizontal
-    if (isMobileDevice) {
-        btnsBarSelect.disabled = true;
-    } else {
-        btnsBarSelect.addEventListener('change', (e) => {
-            setButtonsBarPosition(btnsBarSelect.value);
-        });
-    }
-    // room actions
-    muteEveryoneBtn.addEventListener('click', (e) => {
-        disableAllPeers('audio');
-    });
-    hideEveryoneBtn.addEventListener('click', (e) => {
-        disableAllPeers('video');
-    });
-    lockUnlockRoomBtn.addEventListener('click', (e) => {
-        lockUnlockRoom();
-    });
-}
-
-/**
- * Make video Url player draggable
- */
-function setupVideoUrlPlayer() {
-    if (isMobileDevice) {
-        // adapt video player iframe for mobile
-        document.documentElement.style.setProperty('--iframe-width', '320px');
-        document.documentElement.style.setProperty('--iframe-height', '240px');
-    } else {
-        dragElement(videoUrlCont, videoUrlHeader);
-    }
-    videoUrlCloseBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        closeVideoUrlPlayer();
-        emitVideoPlayer('close');
     });
 }
 
@@ -1681,74 +1304,6 @@ function getVideoConstraints(videoQuality) {
                 height: { exact: 2160 },
                 frameRate: frameRate,
             }; // video cam constraints ultra high bandwidth
-    }
-}
-
-/**
- * https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamTrack/applyConstraints
- *
- * @param {*} maxFrameRate
- */
-function setLocalMaxFps(maxFrameRate) {
-    localMediaStream
-        .getVideoTracks()[0]
-        .applyConstraints({ frameRate: { max: maxFrameRate } })
-        .then(() => {
-            logStreamSettingsInfo('setLocalMaxFps', localMediaStream);
-        })
-        .catch((err) => {
-            console.error('setLocalMaxFps', err);
-            userLog('error', "Your device doesn't support the selected fps, please select the another one.");
-        });
-}
-
-/**
- * https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamTrack/applyConstraints
- */
-function setLocalVideoQuality() {
-    let videoConstraints = getVideoConstraints(videoQualitySelect.value ? videoQualitySelect.value : 'default');
-    localMediaStream
-        .getVideoTracks()[0]
-        .applyConstraints(videoConstraints)
-        .then(() => {
-            logStreamSettingsInfo('setLocalVideoQuality', localMediaStream);
-        })
-        .catch((err) => {
-            console.error('setLocalVideoQuality', err);
-            userLog('error', "Your device doesn't support the selected video quality, please select the another one.");
-        });
-}
-
-/**
- * Change Speaker
- */
-function changeAudioDestination() {
-    const audioDestination = audioOutputSelect.value;
-    attachSinkId(myVideo, audioDestination);
-}
-
-/**
- * Attach audio output device to video element using device/sink ID.
- * @param {*} element
- * @param {*} sinkId
- */
-function attachSinkId(element, sinkId) {
-    if (typeof element.sinkId !== 'undefined') {
-        element
-            .setSinkId(sinkId)
-            .then(() => {
-                console.log(`Success, audio output device attached: ${sinkId}`);
-            })
-            .catch((err) => {
-                let errorMessage = err;
-                if (err.name === 'SecurityError')
-                    errorMessage = `You need to use HTTPS for selecting audio output device: ${err}`;
-                console.error(errorMessage);
-                // Jump back to first output device in the list as it's the default.
-                audioOutputSelect.selectedIndex = 0;
-            });
-    } else {
-        console.warn('Browser does not support output device selection.');
     }
 }
 
@@ -1926,10 +1481,9 @@ function stopLocalAudioTrack() {
  * https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getDisplayMedia
  */
 function toggleScreenSharing() {
-    screenMaxFrameRate = parseInt(screenFpsSelect.value);
     const constraints = {
         video: { frameRate: { max: screenMaxFrameRate } },
-    }; // true | { frameRate: { max: screenMaxFrameRate } }
+    }; 
 
     let screenMediaPromise;
 
@@ -2086,23 +1640,6 @@ function refreshMyLocalStream(stream, localAudioTrackChange = false) {
 }
 
 /**
- * Get MediaRecorder MimeTypes
- * @returns mimeType
- */
-function getSupportedMimeTypes() {
-    const possibleTypes = [
-        'video/webm;codecs=vp9,opus',
-        'video/webm;codecs=vp8,opus',
-        'video/webm;codecs=h264,opus',
-        'video/mp4;codecs=h264,aac',
-        'video/mp4',
-    ];
-    return possibleTypes.filter((mimeType) => {
-        return MediaRecorder.isTypeSupported(mimeType);
-    });
-}
-
-/**
  * Create Chat Room Data Channel
  * @param {*} peer_id
  */
@@ -2116,15 +1653,15 @@ function createChatDataChannel(peer_id) {
 /**
  * Set the chat room on full screen mode for mobile
  */
-function setChatRoomForMobile() {
-    if (isMobileDevice) {
-        document.documentElement.style.setProperty('--msger-height', '99%');
-        document.documentElement.style.setProperty('--msger-width', '99%');
-    } else {
-        // make chat room draggable for desktop
-        dragElement(msgerDraggable, msgerHeader);
-    }
-}
+// function setChatRoomForMobile() {
+//     if (isMobileDevice) {
+//         document.documentElement.style.setProperty('--msger-height', '99%');
+//         document.documentElement.style.setProperty('--msger-width', '99%');
+//     } else {
+//         // make chat room draggable for desktop
+//         dragElement(msgerDraggable, msgerHeader);
+//     }
+// }
 
 /**
  * Show msger draggable on center screen position
@@ -2153,7 +1690,6 @@ function showChatRoomDraggable() {
  */
 function hideChatRoomAndEmojiPicker() {
     msgerDraggable.style.display = 'none';
-    msgerEmojiPicker.style.display = 'none';
     chatRoomBtn.className = 'fas fa-comment';
     isChatRoomVisible = false;
     isChatEmojiVisible = false;
@@ -2212,14 +1748,6 @@ function handleDataChannelChat(dataMessage) {
 }
 
 /**
- * Escape Special Chars
- * @param {*} regex
- */
-function escapeSpecialChars(regex) {
-    return regex.replace(/([()[{*+.$^\\|?])/g, '\\$1');
-}
-
-/**
  * Append Message to msger chat room
  * @param {*} from
  * @param {*} img
@@ -2257,42 +1785,6 @@ function appendMessage(from, img, side, msg, privateMsg) {
     msgerChat.insertAdjacentHTML('beforeend', msgHTML);
     msgerChat.scrollTop += 500;
 }
-
-/**
- * Add participants in the chat room lists
- * @param {*} peers
- */
-function msgerAddPeers(peers) {
-    // add all current Participants
-    for (let peer_id in peers) {
-        let peer_name = peers[peer_id]['peer_name'];
-        // bypass insert to myself in the list :)
-        if (peer_name != myPeerName) {
-            let exsistMsgerPrivateDiv = getId(peer_id + '_pMsgDiv');
-            // if there isn't add it....
-            if (!exsistMsgerPrivateDiv) {
-                let msgerPrivateDiv = `
-                <div id="${peer_id}_pMsgDiv" class="msger-peer-inputarea">
-                    <input
-                        id="${peer_id}_pMsgInput"
-                        class="msger-input"
-                        type="text"
-                        placeholder="💬 Enter your message..."
-                    />
-                    <button id="${peer_id}_pMsgBtn" class="fas fa-paper-plane" value="${peer_name}">&nbsp;${peer_name}</button>
-                </div>
-                `;
-                msgerCPList.insertAdjacentHTML('beforeend', msgerPrivateDiv);
-                msgerCPList.scrollTop += 500;
-
-                let msgerPrivateMsgInput = getId(peer_id + '_pMsgInput');
-                let msgerPrivateBtn = getId(peer_id + '_pMsgBtn');
-                addMsgerPrivateBtn(msgerPrivateBtn, msgerPrivateMsgInput);
-            }
-        }
-    }
-}
-
 /**
  * Remove participant from chat room lists
  * @param {*} peer_id
@@ -2307,25 +1799,6 @@ function msgerRemovePeer(peer_id) {
         }
         msgerPrivateDiv.remove();
     }
-}
-
-/**
- * Setup msger buttons to send private messages
- * @param {*} msgerPrivateBtn
- * @param {*} msgerPrivateMsgInput
- */
-function addMsgerPrivateBtn(msgerPrivateBtn, msgerPrivateMsgInput) {
-    // add button to send private messages
-    msgerPrivateBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        let pMsg = msgerPrivateMsgInput.value;
-        if (!pMsg) return;
-        let toPeerName = msgerPrivateBtn.value;
-        emitMsg(myPeerName, toPeerName, pMsg, true);
-        appendMessage(myPeerName, rightChatAvatar, 'right', pMsg + '<br/><hr>Private message to ' + toPeerName, true);
-        msgerPrivateMsgInput.value = '';
-        msgerCP.style.display = 'none';
-    });
 }
 
 /**
@@ -2546,7 +2019,6 @@ function setPeerHandStatus(peer_id, peer_name, status) {
     peerHandStatus.style.display = status ? 'block' : 'none';
     if (status) {
         userLog('toast', peer_name + ' has raised the hand');
-        // playSound('raiseHand');
     }
 }
 
@@ -2561,7 +2033,6 @@ function setPeerAudioStatus(peer_id, status) {
     tippy(peerAudioStatus, {
         content: status ? 'Participant audio is ON' : 'Participant audio is OFF',
     });
-    // status ? playSound('on') : playSound('off');
 }
 
 /**
@@ -2587,57 +2058,6 @@ function handlePeerVideoBtn(peer_id) {
 }
 
 /**
- * Send Private Message to specific peer
- * @param {*} peer_id
- * @param {*} toPeerName
- */
-function handlePeerPrivateMsg(peer_id, toPeerName) {
-    let peerPrivateMsg = getId(peer_id + '_privateMsg');
-    peerPrivateMsg.onclick = (e) => {
-        e.preventDefault();
-        Swal.fire({
-            background: swalBackground,
-            position: 'center',
-            imageUrl: messageImg,
-            title: 'Send private message',
-            input: 'text',
-            showCancelButton: true,
-            confirmButtonText: `Send`,
-            // showClass: {
-            //     popup: 'animate__animated animate__fadeInDown',
-            // },
-            // hideClass: {
-            //     popup: 'animate__animated animate__fadeOutUp',
-            // },
-        }).then((result) => {
-            if (result.value) {
-                let pMsg = result.value;
-                emitMsg(myPeerName, toPeerName, pMsg, true);
-                appendMessage(
-                    myPeerName,
-                    rightChatAvatar,
-                    'right',
-                    pMsg + '<br/><hr>Private message to ' + toPeerName,
-                    true,
-                );
-                userLog('toast', 'Message sent to ' + toPeerName + ' 👍');
-            }
-        });
-    };
-}
-
-/**
- * Send YouTube video to specific peer
- * @param {*} peer_id
- */
-function handlePeerYouTube(peer_id) {
-    let peerYoutubeBtn = getId(peer_id + '_youtube');
-    peerYoutubeBtn.onclick = () => {
-        sendVideoUrl(peer_id);
-    };
-}
-
-/**
  * Set Participant Video Status Icon and Title
  * @param {*} peer_id
  * @param {*} status
@@ -2650,7 +2070,6 @@ function setPeerVideoStatus(peer_id, status) {
     tippy(peerVideoStatus, {
         content: status ? 'Participant video is ON' : 'Participant video is OFF',
     });
-    // status ? playSound('on') : playSound('off');
 }
 
 /**
@@ -2712,8 +2131,6 @@ function setMyAudioOff(peer_name) {
     audioBtn.className = 'fas fa-microphone-slash';
     setMyAudioStatus(myAudioStatus);
     userLog('toast', peer_name + ' has disabled your audio');
-    // playSound('off');
-
 }
 
 /**
@@ -2726,50 +2143,6 @@ function setMyVideoOff(peer_name) {
     videoBtn.className = 'fas fa-video-slash';
     setMyVideoStatus(myVideoStatus);
     userLog('toast', peer_name + ' has disabled your video');
-    // playSound('off');
-}
-
-/**
- * Mute or Hide everyone except yourself
- * @param {*} element audio/video
- */
-function disableAllPeers(element) {
-    if (!thereIsPeerConnections()) {
-        userLog('info', 'No participants detected');
-        return;
-    }
-    Swal.fire({
-        background: swalBackground,
-        position: 'center',
-        imageUrl: element == 'audio' ? audioOffImg : camOffImg,
-        title: element == 'audio' ? 'Mute everyone except yourself?' : 'Hide everyone except yourself?',
-        text:
-            element == 'audio'
-                ? "Once muted, you won't be able to unmute them, but they can unmute themselves at any time."
-                : "Once hided, you won't be able to unhide them, but they can unhide themselves at any time.",
-        showDenyButton: true,
-        confirmButtonText: element == 'audio' ? `Mute` : `Hide`,
-        denyButtonText: `Cancel`,
-        showClass: {
-            popup: 'animate__animated animate__fadeInDown',
-        },
-        hideClass: {
-            popup: 'animate__animated animate__fadeOutUp',
-        },
-    }).then((result) => {
-        if (result.isConfirmed) {
-            switch (element) {
-                case 'audio':
-                    userLog('toast', 'Mute everyone 👍');
-                    emitPeersAction('muteAudio');
-                    break;
-                case 'video':
-                    userLog('toast', 'Hide everyone 👍');
-                    emitPeersAction('hideVideo');
-                    break;
-            }
-        }
-    });
 }
 
 /**
@@ -2811,73 +2184,6 @@ function disablePeer(peer_id, element) {
 }
 
 /**
- * Lock Unlock the room from unauthorized access
- */
-function lockUnlockRoom() {
-    lockUnlockRoomBtn.className = roomLocked ? 'fas fa-lock-open' : 'fas fa-lock';
-
-    if (roomLocked) {
-        roomLocked = false;
-        emitRoomStatus();
-    } else {
-        roomLocked = true;
-        emitRoomStatus();
-        // playSound('locked');
-    }
-}
-
-/**
- * Refresh Room Status (Locked/Unlocked)
- */
-function emitRoomStatus() {
-    let rStatus = roomLocked ? '🔒 LOCKED the room, no one can access!' : '🔓 UNLOCKED the room';
-    userLog('toast', rStatus);
-
-    sendToServer('roomStatus', {
-        room_id: roomId,
-        room_locked: roomLocked,
-        peer_name: myPeerName,
-    });
-}
-
-/**
- * Handle Room Status (Lock - Unlock)
- * @param {*} config
- */
-function handleRoomStatus(config) {
-    let peer_name = config.peer_name;
-    let room_locked = config.room_locked;
-    roomLocked = room_locked;
-    lockUnlockRoomBtn.className = roomLocked ? 'fas fa-lock' : 'fas fa-lock-open';
-    userLog('toast', peer_name + ' set room is locked to ' + roomLocked);
-}
-
-/**
- * Room is Locked can't access...
- */
-function handleRoomLocked() {
-    // playSound('kickedOut');
-
-    Swal.fire({
-        allowOutsideClick: false,
-        background: swalBackground,
-        position: 'center',
-        imageUrl: roomLockedImg,
-        title: 'Oops, Room Locked',
-        text: 'The room is locked, try with another one.',
-        showDenyButton: false,
-        confirmButtonText: `Ok`,
-    }).then((result) => {
-        if (result.isConfirmed) window.location.href = '/newcall';
-    });
-}
-
-
-
-
-
-
-/**
  * Send File through RTC Data Channels
  * @param {*} data fileReader e.target.result
  */
@@ -2903,12 +2209,6 @@ function sendVideoUrl(peer_id = null) {
         input: 'text',
         showCancelButton: true,
         confirmButtonText: `Share`,
-        // showClass: {
-        //     popup: 'animate__animated animate__fadeInDown',
-        // },
-        // hideClass: {
-        //     popup: 'animate__animated animate__fadeOutUp',
-        // },
     }).then((result) => {
         if (result.value) {
             if (!thereIsPeerConnections()) {
@@ -2925,50 +2225,6 @@ function sendVideoUrl(peer_id = null) {
         }
     });
 }
-
-/**
- * Open video url Player
- */
-function openVideoUrlPlayer(config) {
-    let videoSrc = config.video_src;
-    let videoEmbed = getYoutubeEmbed(videoSrc);
-    //
-    if (!isVideoUrlPlayerOpen) {
-        if (videoEmbed) {
-            // playSound('newMessage');
-            videoUrlIframe.src = videoEmbed;
-            videoUrlCont.style.display = 'flex';
-            isVideoUrlPlayerOpen = true;
-        } else {
-            userLog('error', 'Something wrong, try with another Youtube URL');
-        }
-    } else {
-        // video player seems open
-        videoUrlIframe.src = videoEmbed;
-    }
-}
-
-/**
- * Get youtube embed URL
- * @param {*} url
- * @returns Youtube Embed URL
- */
-function getYoutubeEmbed(url) {
-    let regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
-    let match = url.match(regExp);
-    return match && match[7].length == 11 ? 'https://www.youtube.com/embed/' + match[7] + '?autoplay=1' : false;
-}
-
-/**
- * Close Video Url Player
- */
-function closeVideoUrlPlayer() {
-    // Reload all iframes again to stop videos & disable autoplay
-    videoUrlIframe.src = videoUrlIframe.src.replace('?autoplay=1', '');
-    videoUrlCont.style.display = 'none';
-    isVideoUrlPlayerOpen = false;
-}
-
 /**
  * Emit video palyer to peers
  * @param {*} video_action
@@ -3012,12 +2268,6 @@ function kickOut(peer_id, peerKickOutBtn) {
         showDenyButton: true,
         confirmButtonText: `Yes`,
         denyButtonText: `No`,
-        // showClass: {
-        //     popup: 'animate__animated animate__fadeInDown',
-        // },
-        // hideClass: {
-        //     popup: 'animate__animated animate__fadeOutUp',
-        // },
     }).then((result) => {
         if (result.isConfirmed) {
             // send peer to kick out from room
@@ -3036,11 +2286,7 @@ function kickOut(peer_id, peerKickOutBtn) {
  */
 function handleKickedOut(config) {
     let peer_name = config.peer_name;
-
-    // playSound('kickedOut');
-
     let timerInterval;
-
     Swal.fire({
         allowOutsideClick: false,
         background: swalBackground,
@@ -3079,43 +2325,9 @@ function handleKickedOut(config) {
 }
 
 /**
- * MiroTalk about info
- */
-function showAbout() {
-    // playSound('newMessage');
-
-    Swal.fire({
-        background: swalBackground,
-        position: 'center',
-        title: '<strong>WebRTC Made with ❤️</strong>',
-        imageAlt: 'mirotalk-about',
-        imageUrl: aboutImg,
-        html: `
-        <br/>
-        <div id="about">
-            <b>Open Source</b> project on
-            <a href="https://github.com/miroslavpejic85/mirotalk" target="_blank"><br/></br>
-            <img alt="mirotalk github" src="../images/github.png"></a><br/><br/>
-            <button class="far fa-heart pulsate" onclick="window.open('https://github.com/sponsors/miroslavpejic85?o=esb')"> Sponsor</button>
-            <br /><br />
-            Author:<a href="https://www.linkedin.com/in/miroslav-pejic-976a07101/" target="_blank"> Miroslav Pejic</a>
-        </div>
-        `,
-        // showClass: {
-        //     popup: 'animate__animated animate__fadeInDown',
-        // },
-        // hideClass: {
-        //     popup: 'animate__animated animate__fadeOutUp',
-        // },
-    });
-}
-
-/**
  * Leave the Room and create a new one
  */
 function leaveRoom() {
-    // playSound('newMessage');
-
     Swal.fire({
         background: swalBackground,
         position: 'center',
@@ -3125,12 +2337,6 @@ function leaveRoom() {
         showDenyButton: true,
         confirmButtonText: `Yes`,
         denyButtonText: `No`,
-        // showClass: {
-        //     popup: 'animate__animated animate__fadeInDown',
-        // },
-        // hideClass: {
-        //     popup: 'animate__animated animate__fadeOutUp',
-        // },
     }).then((result) => {
         if (result.isConfirmed) window.location.href = '/newcall';
     });

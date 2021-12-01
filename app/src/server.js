@@ -266,10 +266,6 @@ io.sockets.on('connect', (socket) => {
         let peer_id = config.peer_id;
         let ice_candidate = config.ice_candidate;
 
-        // log.debug('[' + socket.id + '] relay ICE-candidate to [' + peer_id + '] ', {
-        //     address: config.ice_candidate,
-        // });
-
         sendToPeer(peer_id, sockets, 'iceCandidate', {
             peer_id: socket.id,
             ice_candidate: ice_candidate,
@@ -290,24 +286,6 @@ io.sockets.on('connect', (socket) => {
         sendToPeer(peer_id, sockets, 'sessionDescription', {
             peer_id: socket.id,
             session_description: session_description,
-        });
-    });
-
-    /**
-     * Refresh Room Status (Locked/Unlocked)
-     */
-    socket.on('roomStatus', (config) => {
-        let room_id = config.room_id;
-        let room_locked = config.room_locked;
-        let peer_name = config.peer_name;
-
-        peers[room_id]['Locked'] = room_locked;
-
-        log.debug('[' + socket.id + '] emit roomStatus' + ' to [room_id: ' + room_id + ' locked: ' + room_locked + ']');
-
-        sendToRoom(room_id, socket.id, 'roomStatus', {
-            peer_name: peer_name,
-            room_locked: room_locked,
         });
     });
 
