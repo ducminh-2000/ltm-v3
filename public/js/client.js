@@ -7,12 +7,16 @@ const roomId = getRoomId();
 const peerInfo = getPeerInfo();
 const peerLoockupUrl = 'https://extreme-ip-lookup.com/json/';
 const avatarApiUrl = 'https://eu.ui-avatars.com/api';
-const welcomeImg = '';
+const welcomeImg = '../images/image-placeholder.svg';
+const shareUrlImg = '../images/image-placeholder.svg';
 const leaveRoomImg = '../images/leave-room.png';
 const confirmImg = '../images/image-placeholder.svg';
+const fileSharingImg = '../images/image-placeholder.svg';
+const roomLockedImg = '../images/locked.png';
 const camOffImg = '../images/cam-off.png';
 const audioOffImg = '../images/audio-off.png';
 const deleteImg = '../images/delete.png';
+const youtubeImg = '../images/youtube.png';
 const messageImg = '../images/message.png';
 const kickedOutImg = '../images/leave-room.png';
 const aboutImg = '../images/about.png';
@@ -62,15 +66,17 @@ let isVideoOnFullScreen = false;
 let isDocumentOnFullScreen = false;
 let isVideoUrlPlayerOpen = false;
 let isRecScreenSream = false;
-let signalingSocket; // socket.io kết nối server
-let localMediaStream; // video/audio local
-let remoteMediaStream; // video/audip remote
+let signalingSocket; // socket.io connection to our webserver
+let localMediaStream; // my microphone / webcam
+let remoteMediaStream; // peers microphone / webcam
+let recScreenStream; // recorded screen stream
 let remoteMediaControls = false; // enable - disable peers video player controls (default false)
 let peerConnections = {}; // keep track of our peer connections, indexed by peer_id == socket.io id
 let chatDataChannels = {}; // keep track of our peer chat data channels
+let fileDataChannels = {}; // keep track of our peer file sharing data channels
 let peerMediaElements = {}; // keep track of our peer <video> tags, indexed by peer_id
 let chatMessages = []; // collect chat messages to save it later if want
-// let backupIceServers = [{ urls: 'stun:stun.l.google.com:19302' }]; // backup iceServers
+let backupIceServers = [{ urls: 'stun:stun.l.google.com:19302' }]; // backup iceServers
 
 
 // init audio-video
@@ -234,9 +240,10 @@ function initClientPeer() {
     signalingSocket.on('addPeer', handleAddPeer);
     signalingSocket.on('sessionDescription', handleSessionDescription);
     signalingSocket.on('iceCandidate', handleIceCandidate);
-    // signalingSocket.on('peerName', handlePeerName);
+    signalingSocket.on('peerName', handlePeerName);
     signalingSocket.on('peerStatus', handlePeerStatus);
     signalingSocket.on('peerAction', handlePeerAction);
+    signalingSocket.on('kickOut', handleKickedOut);
     signalingSocket.on('disconnect', handleDisconnect);
     signalingSocket.on('removePeer', handleRemovePeer);
 } 
@@ -339,7 +346,7 @@ function handleAddPeer(config) {
         return;
     }
 
-    // if (!iceServers) iceServers = backupIceServers;
+    if (!iceServers) iceServers = backupIceServers;
     console.log('iceServers', iceServers[0]);
 
     // https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection
@@ -646,7 +653,13 @@ function setupLocalMedia(callback, errorback) {
             loadLocalMedia(stream);
             if (callback) callback();
         })
-        
+        .catch((err) => {
+            // https://blog.addpipe.com/common-getusermedia-errors/
+            console.error('Access denied for audio/video', err);
+            // playSound('error');
+            window.location.href = `/permission?roomId=${roomId}&getUserMediaError=${err.toString()}`;
+            if (errorback) errorback();
+        });
 } // end [setup_local_stream]
 
 /**
@@ -2263,45 +2276,45 @@ function kickOut(peer_id, peerKickOutBtn) {
  * You will be kicked out from the room and popup the peer name that performed this action
  * @param {*} config
  */
-// function handleKickedOut(config) {
-//     let peer_name = config.peer_name;
-//     let timerInterval;
-//     Swal.fire({
-//         allowOutsideClick: false,
-//         background: swalBackground,
-//         position: 'center',
-//         imageUrl: kickedOutImg,
-//         title: 'Kicked out!',
-//         html:
-//             `<h2 style="color: red;">` +
-//             `User ` +
-//             peer_name +
-//             `</h2> will kick out you after <b style="color: red;"></b> milliseconds.`,
-//         timer: 1000,
-//         timerProgressBar: true,
-//         didOpen: () => {
-//             Swal.showLoading();
-//             timerInterval = setInterval(() => {
-//                 const content = Swal.getHtmlContainer();
-//                 if (content) {
-//                     const b = content.querySelector('b');
-//                     if (b) b.textContent = Swal.getTimerLeft();
-//                 }
-//             }, 100);
-//         },
-//         willClose: () => {
-//             clearInterval(timerInterval);
-//         },
-//         // showClass: {
-//         //     popup: 'animate__animated animate__fadeInDown',
-//         // },
-//         // hideClass: {
-//         //     popup: 'animate__animated animate__fadeOutUp',
-//         // },
-//     }).then(() => {
-//         window.location.href = '/newcall';
-//     });
-// }
+function handleKickedOut(config) {
+    let peer_name = config.peer_name;
+    let timerInterval;
+    Swal.fire({
+        allowOutsideClick: false,
+        background: swalBackground,
+        position: 'center',
+        imageUrl: kickedOutImg,
+        title: 'Kicked out!',
+        html:
+            `<h2 style="color: red;">` +
+            `User ` +
+            peer_name +
+            `</h2> will kick out you after <b style="color: red;"></b> milliseconds.`,
+        timer: 1000,
+        timerProgressBar: true,
+        didOpen: () => {
+            Swal.showLoading();
+            timerInterval = setInterval(() => {
+                const content = Swal.getHtmlContainer();
+                if (content) {
+                    const b = content.querySelector('b');
+                    if (b) b.textContent = Swal.getTimerLeft();
+                }
+            }, 100);
+        },
+        willClose: () => {
+            clearInterval(timerInterval);
+        },
+        // showClass: {
+        //     popup: 'animate__animated animate__fadeInDown',
+        // },
+        // hideClass: {
+        //     popup: 'animate__animated animate__fadeOutUp',
+        // },
+    }).then(() => {
+        window.location.href = '/newcall';
+    });
+}
 
 /**
  * Leave the Room and create a new one
