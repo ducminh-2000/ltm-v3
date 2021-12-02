@@ -5,6 +5,8 @@ const signalingServerPort = 3000;
 const signalingServer = getSignalingServer();
 const roomId = getRoomId();
 const peerInfo = getPeerInfo();
+const peerLoockupUrl = 'https://extreme-ip-lookup.com/json/';
+const avatarApiUrl = 'https://eu.ui-avatars.com/api';
 const welcomeImg = '';
 const leaveRoomImg = '../images/leave-room.png';
 const confirmImg = '../images/image-placeholder.svg';
@@ -12,6 +14,8 @@ const camOffImg = '../images/cam-off.png';
 const audioOffImg = '../images/audio-off.png';
 const deleteImg = '../images/delete.png';
 const messageImg = '../images/message.png';
+const kickedOutImg = '../images/leave-room.png';
+const aboutImg = '../images/about.png';
 
 const notifyBySound = true;
 const fileSharingInput = '*';
@@ -31,6 +35,10 @@ let screenMaxFrameRate = 30;
 let leftChatAvatar;
 let rightChatAvatar;
 
+let callStartTime;
+let callElapsedTime;
+let recStartTime;
+let recElapsedTime;
 let mirotalkTheme = 'neon'; // neon - dark - forest - ghost ...
 let mirotalkBtnsBar = 'vertical'; // vertical - horizontal
 let swalBackground = 'rgba(0, 0, 0, 0.7)'; // black - #16171b - transparent ...
@@ -155,6 +163,10 @@ function getPeerInfo() {
  * @return Signaling server URL
  */
 function getSignalingServer() {
+    if (isHttps) {
+        return 'https://' + 'localhost' + ':' + signalingServerPort;
+        // outside of localhost change it with YOUR-SERVER-DOMAIN
+    }
     return (
         'http' +
         (location.hostname == 'localhost' ? '' : 's') +
@@ -608,17 +620,34 @@ function setButtonsBarPosition(position) {
  * @param {*} callback
  * @param {*} errorback
  */
-function setupLocalMedia(callback) {
+function setupLocalMedia(callback, errorback) {
+    // if we've already been initialized do nothing
+    if (localMediaStream != null) {
+        if (callback) callback();
+        return;
+    }
+    console.log('Requesting access to local audio / video inputs');
+
+    // default | qvgaVideo | vgaVideo | hdVideo | fhdVideo | 4kVideo |
+    let videoConstraints = getVideoConstraints('default');
+
     const constraints = {
-        audio: true,
-        video: true,
+        audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            sampleRate: 44100,
+        },
+        video: videoConstraints,
     };
 
-    navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
-        loadLocalMedia(stream);
-        if (callback) callback();
-    });
-}
+    navigator.mediaDevices
+        .getUserMedia(constraints)
+        .then((stream) => {
+            loadLocalMedia(stream);
+            if (callback) callback();
+        })
+        
+} // end [setup_local_stream]
 
 /**
  * Load Local Media Stream obj
@@ -848,6 +877,8 @@ function loadRemoteMediaStream(stream, peers, peer_id) {
     resizeVideos();
     // handle video full screen mode
     handleVideoPlayerFs(peer_id + '_video', peer_id + '_fullScreen', peer_id);
+    // handle kick out button event
+    handlePeerKickOutBtn(peer_id);
     // refresh remote peers avatar name
     setPeerAvatarImgName(peer_id + '_avatar', peer_name);
     // refresh remote peers hand icon status and title
@@ -1207,6 +1238,53 @@ function getAudioVideoConstraints() {
     return constraints;
 }
 
+/**
+ * https://webrtc.github.io/samples/src/content/getusermedia/resolution/
+ *
+ * @returns video constraints
+ */
+function getVideoConstraints(videoQuality) {
+    let frameRate = { max: videoMaxFrameRate };
+
+    switch (videoQuality) {
+        case 'useVideo':
+            return useVideo;
+        // Firefox not support set frameRate (OverconstrainedError) O.o
+        case 'default':
+            return { frameRate: frameRate };
+        // video cam constraints default
+        case 'qvgaVideo':
+            return {
+                width: { exact: 320 },
+                height: { exact: 240 },
+                frameRate: frameRate,
+            }; // video cam constraints low bandwidth
+        case 'vgaVideo':
+            return {
+                width: { exact: 640 },
+                height: { exact: 480 },
+                frameRate: frameRate,
+            }; // video cam constraints medium bandwidth
+        case 'hdVideo':
+            return {
+                width: { exact: 1280 },
+                height: { exact: 720 },
+                frameRate: frameRate,
+            }; // video cam constraints high bandwidth
+        case 'fhdVideo':
+            return {
+                width: { exact: 1920 },
+                height: { exact: 1080 },
+                frameRate: frameRate,
+            }; // video cam constraints very high bandwidth
+        case '4kVideo':
+            return {
+                width: { exact: 3840 },
+                height: { exact: 2160 },
+                frameRate: frameRate,
+            }; // video cam constraints ultra high bandwidth
+    }
+}
 
 /**
  * Got Stream and append to local media

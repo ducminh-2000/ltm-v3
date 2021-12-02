@@ -29,12 +29,6 @@ app.get(['/newcall'], (req, res) => {
     res.sendFile(path.join(__dirname, '../../', 'public/view/landing.html'));
 });
 
-// // if not allow video/audio
-// app.get(['/permission'], (req, res) => {
-//     res.sendFile(path.join(__dirname, '../../', 'public/view/permission.html'));
-// });
-
-
 // no room name specified to join
 app.get('/join/', (req, res) => {
     res.redirect('/');
@@ -51,7 +45,7 @@ app.get('/join/*', (req, res) => {
 
 /** */
 
-// ice server
+// ice server truyền và nhận các ICE candidate
 const iceServers = [{ urls: 'stun:stun.l.google.com:19302' }];
 
 server.listen(port,() => {
@@ -159,7 +153,7 @@ io.sockets.on('connect', (socket) => {
     }
 
     /**
-     * Relay ICE to peers
+     * gửi ice candidate tới người dùng khác
      */
     socket.on('relayICE', (config) => {
         let peer_id = config.peer_id;
@@ -172,7 +166,7 @@ io.sockets.on('connect', (socket) => {
     });
 
     /**
-     * Relay SDP to peers
+     * gửi yêu cầu kết nối tới người dùng khác
      */
     socket.on('relaySDP', (config) => {
         let peer_id = config.peer_id;
