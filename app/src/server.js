@@ -36,11 +36,7 @@ app.get('/join/', (req, res) => {
 
 // join to room
 app.get('/join/*', (req, res) => {
-    // if (Object.keys(req.query).length > 0) {
-    //     res.redirect(url.parse(req.url).pathname);
-    // } else {
-        res.sendFile(path.join(__dirname, '../../', 'public/view/client.html'));
-    // }
+    res.sendFile(path.join(__dirname, '../../', 'public/view/client.html'));
 });
 
 /** */

@@ -7,19 +7,15 @@ const roomId = getRoomId();
 const peerInfo = getPeerInfo();
 const peerLoockupUrl = 'https://extreme-ip-lookup.com/json/';
 const avatarApiUrl = 'https://eu.ui-avatars.com/api';
-const welcomeImg = '../images/image-placeholder.svg';
+const welcomeImg = '';
 const shareUrlImg = '../images/image-placeholder.svg';
 const leaveRoomImg = '../images/leave-room.png';
-const confirmImg = '../images/image-placeholder.svg';
-const fileSharingImg = '../images/image-placeholder.svg';
 const roomLockedImg = '../images/locked.png';
 const camOffImg = '../images/cam-off.png';
 const audioOffImg = '../images/audio-off.png';
 const deleteImg = '../images/delete.png';
 const youtubeImg = '../images/youtube.png';
 const messageImg = '../images/message.png';
-const kickedOutImg = '../images/leave-room.png';
-const aboutImg = '../images/about.png';
 
 const notifyBySound = true;
 const fileSharingInput = '*';
@@ -240,10 +236,8 @@ function initClientPeer() {
     signalingSocket.on('addPeer', handleAddPeer);
     signalingSocket.on('sessionDescription', handleSessionDescription);
     signalingSocket.on('iceCandidate', handleIceCandidate);
-    signalingSocket.on('peerName', handlePeerName);
     signalingSocket.on('peerStatus', handlePeerStatus);
     signalingSocket.on('peerAction', handlePeerAction);
-    signalingSocket.on('kickOut', handleKickedOut);
     signalingSocket.on('disconnect', handleDisconnect);
     signalingSocket.on('removePeer', handleRemovePeer);
 } 
@@ -803,7 +797,7 @@ function loadRemoteMediaStream(stream, peers, peer_id) {
     const remoteHandStatusIcon = document.createElement('button');
     const remoteVideoStatusIcon = document.createElement('button');
     const remoteAudioStatusIcon = document.createElement('button');
-    const remotePeerKickOut = document.createElement('button');
+    // const remotePeerKickOut = document.createElement('button');
     const remoteVideoFullScreenBtn = document.createElement('button');
     const remoteVideoAvatarImage = document.createElement('img');
 
@@ -840,12 +834,12 @@ function loadRemoteMediaStream(stream, peers, peer_id) {
     tippy(remoteAudioStatusIcon, {
         content: 'Participant audio is ON',
     });
-    // remote peer kick out
-    remotePeerKickOut.setAttribute('id', peer_id + '_kickOut');
-    remotePeerKickOut.className = 'fas fa-sign-out-alt';
-    tippy(remotePeerKickOut, {
-        content: 'Kick out',
-    });
+    // // remote peer kick out
+    // remotePeerKickOut.setAttribute('id', peer_id + '_kickOut');
+    // remotePeerKickOut.className = 'fas fa-sign-out-alt';
+    // tippy(remotePeerKickOut, {
+    //     content: 'Kick out',
+    // });
     // remote video full screen mode
     remoteVideoFullScreenBtn.setAttribute('id', peer_id + '_fullScreen');
     remoteVideoFullScreenBtn.className = 'fas fa-expand';
@@ -862,7 +856,7 @@ function loadRemoteMediaStream(stream, peers, peer_id) {
     remoteStatusMenu.appendChild(remoteHandStatusIcon);
     remoteStatusMenu.appendChild(remoteVideoStatusIcon);
     remoteStatusMenu.appendChild(remoteAudioStatusIcon);
-    remoteStatusMenu.appendChild(remotePeerKickOut);
+    // remoteStatusMenu.appendChild(remotePeerKickOut);
     remoteStatusMenu.appendChild(remoteVideoFullScreenBtn);
 
     remoteMedia.setAttribute('id', peer_id + '_video');
@@ -890,8 +884,6 @@ function loadRemoteMediaStream(stream, peers, peer_id) {
     resizeVideos();
     // handle video full screen mode
     handleVideoPlayerFs(peer_id + '_video', peer_id + '_fullScreen', peer_id);
-    // handle kick out button event
-    handlePeerKickOutBtn(peer_id);
     // refresh remote peers avatar name
     setPeerAvatarImgName(peer_id + '_avatar', peer_name);
     // refresh remote peers hand icon status and title
@@ -1748,14 +1740,6 @@ function handleDataChannelChat(dataMessage) {
  * @param {*} privateMsg
  */
 function appendMessage(from, img, side, msg, privateMsg) {
-    let time = getFormatDate(new Date());
-    // collect chat msges to save it later
-    chatMessages.push({
-        time: time,
-        from: from,
-        msg: msg,
-        privateMsg: privateMsg,
-    });
 
     // check if i receive a private message
     let msgBubble = privateMsg ? 'private-msg-bubble' : 'msg-bubble';
@@ -1768,7 +1752,6 @@ function appendMessage(from, img, side, msg, privateMsg) {
 		<div class=${msgBubble}>
             <div class="msg-info">
                 <div class="msg-info-name">${from}</div>
-                <div class="msg-info-time">${time}</div>
             </div>
             <div class="msg-text">${cMsg}</div>
         </div>
@@ -1872,25 +1855,6 @@ function openTab(evt, tabName) {
 }
 
 /**
- * Append updated peer name to video player
- * @param {*} config
- */
-function handlePeerName(config) {
-    let peer_id = config.peer_id;
-    let peer_name = config.peer_name;
-    let videoName = getId(peer_id + '_name');
-    if (videoName) videoName.innerHTML = peer_name;
-    // change also btn value - name on chat lists....
-    let msgerPeerName = getId(peer_id + '_pMsgBtn');
-    if (msgerPeerName) {
-        msgerPeerName.innerHTML = `&nbsp;${peer_name}`;
-        msgerPeerName.value = peer_name;
-    }
-    // refresh also peer video avatar name
-    setPeerAvatarImgName(peer_id + '_avatar', peer_name);
-}
-
-/**
  * Send my Video-Audio-Hand... status
  * @param {*} element
  * @param {*} status
@@ -1981,7 +1945,6 @@ function setMyVideoStatus(status) {
  * @param {*} config
  */
 function handlePeerStatus(config) {
-    //
     let peer_id = config.peer_id;
     let peer_name = config.peer_name;
     let element = config.element;
@@ -2232,89 +2195,6 @@ function emitVideoPlayer(video_action, config = {}) {
     });
 }
 
-/**
- * Handle peer kick out event button
- * @param {*} peer_id
- */
-function handlePeerKickOutBtn(peer_id) {
-    let peerKickOutBtn = getId(peer_id + '_kickOut');
-    peerKickOutBtn.addEventListener('click', (e) => {
-        kickOut(peer_id, peerKickOutBtn);
-    });
-}
-
-/**
- * Kick out confirm
- * @param {*} peer_id
- * @param {*} peerKickOutBtn
- */
-function kickOut(peer_id, peerKickOutBtn) {
-    let pName = getId(peer_id + '_name').innerHTML;
-
-    Swal.fire({
-        background: swalBackground,
-        position: 'center',
-        imageUrl: confirmImg,
-        title: 'Kick out ' + pName,
-        text: 'Are you sure you want to kick out this participant?',
-        showDenyButton: true,
-        confirmButtonText: `Yes`,
-        denyButtonText: `No`,
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // send peer to kick out from room
-            sendToServer('kickOut', {
-                room_id: roomId,
-                peer_id: peer_id,
-                peer_name: myPeerName,
-            });
-        }
-    });
-}
-
-/**
- * You will be kicked out from the room and popup the peer name that performed this action
- * @param {*} config
- */
-function handleKickedOut(config) {
-    let peer_name = config.peer_name;
-    let timerInterval;
-    Swal.fire({
-        allowOutsideClick: false,
-        background: swalBackground,
-        position: 'center',
-        imageUrl: kickedOutImg,
-        title: 'Kicked out!',
-        html:
-            `<h2 style="color: red;">` +
-            `User ` +
-            peer_name +
-            `</h2> will kick out you after <b style="color: red;"></b> milliseconds.`,
-        timer: 1000,
-        timerProgressBar: true,
-        didOpen: () => {
-            Swal.showLoading();
-            timerInterval = setInterval(() => {
-                const content = Swal.getHtmlContainer();
-                if (content) {
-                    const b = content.querySelector('b');
-                    if (b) b.textContent = Swal.getTimerLeft();
-                }
-            }, 100);
-        },
-        willClose: () => {
-            clearInterval(timerInterval);
-        },
-        // showClass: {
-        //     popup: 'animate__animated animate__fadeInDown',
-        // },
-        // hideClass: {
-        //     popup: 'animate__animated animate__fadeOutUp',
-        // },
-    }).then(() => {
-        window.location.href = '/newcall';
-    });
-}
 
 /**
  * Leave the Room and create a new one
