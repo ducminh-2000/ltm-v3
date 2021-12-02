@@ -84,7 +84,7 @@ app.get(['/'], (req, res) => {
 
 // set new room name and join
 app.get(['/newcall'], (req, res) => {
-    res.sendFile(path.join(__dirname, '../../', 'public/view/newcall.html'));
+    res.sendFile(path.join(__dirname, '../../', 'public/view/landing.html'));
 });
 
 // if not allow video/audio

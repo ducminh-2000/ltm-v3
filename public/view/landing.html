@@ -1,61 +1,12 @@
 <!DOCTYPE html>
 <html lang="en" class="no-js">
     <head>
-        <!-- Global site tag (gtag.js) - Google Analytics -->
-
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-3XM60XK9RQ"></script>
-        <script>
-            window.dataLayer = window.dataLayer || [];
-            function gtag() {
-                dataLayer.push(arguments);
-            }
-            gtag('js', new Date());
-
-            gtag('config', 'G-3XM60XK9RQ');
-        </script>
-
-        <!-- Title and Icon -->
-
-        <title>WebRTC Video Calls, Chat & Screen Sharing.</title>
-        <link rel="shortcut icon" href="../images/logo.svg" />
-        <link rel="apple-touch-icon" href="../images/logo.svg" />
-
-        <!-- Meta Information -->
-
-        <meta charset="utf-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-
-        <!-- https://ogp.me -->
-
-        <meta property="og:type" content="app-webrtc" />
-        <meta property="og:site_name" content="MiroTalk" />
-        <meta property="og:title" content="Click the link to make a call." />
-        <meta
-            property="og:description"
-            content="MiroTalk calling provides real-time HD quality and latency simply not available with traditional technology."
-        />
-        <meta property="og:image" content="https://mirotalk.up.railway.app/images/preview.png" />
-        <meta property="og:url" content="https://mirotalk.herokuapp.com/" />
-
-        <!-- StyleSheet -->
-
+        <title>Meet</title>
         <link rel="stylesheet" href="../css/landing.css" />
     </head>
     <body class="has-animations">
         <div class="body-wrap">
-            <header class="site-header reveal-from-top">
-                <div class="container">
-                    <div class="site-header-inner">
-                        <div class="brand">
-                            <div class="m-0">
-                                <a href="/"><img src="../images/logo.svg" alt="Neon" width="32" height="32" /></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </header>
+            <br><br><br><br>
             <main class="site-content">
 
                 <section class="cta section center-content-mobile reveal-from-bottom">
@@ -68,13 +19,12 @@
                             </div>
                             <div class="cta-action">
                                 <div class="mb-24">
-                                    <label class="form-label screen-reader" for="roomName">mirotalk</label>
+                                    <label class="form-label screen-reader" for="roomName">Your RoomID</label>
                                     <div class="form-group-desktop">
-                                        <input class="form-input" type="text" id="roomName" value="mirotalk" />
+                                        <input class="form-input" type="text" id="roomName" value="Enter your roomId" />
                                         <button
                                             class="button button-primary pulse"
-                                            onclick="{window.location.href = '/join/' + document.getElementById('roomName').value}"
-                                        >
+                                            onclick="{window.location.href = '/join/' + document.getElementById('roomName').value}">
                                             Join to room
                                         </button>
                                     </div>
@@ -84,10 +34,7 @@
                     </div>
                 </section>
             </main>
-
         </div>
-
         <script defer src="../js/landing.js"></script>
-        <script defer src="../js/newroom.js"></script>
     </body>
 </html>
